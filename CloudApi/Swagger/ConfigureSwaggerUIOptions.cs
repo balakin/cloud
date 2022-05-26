@@ -23,6 +23,12 @@ public class ConfigureSwaggerUIOptions : IConfigureOptions<SwaggerUIOptions>
         {
             options.SwaggerEndpoint(CreateEndpointUrl(description), CreateEndpointName(description));
         }
+
+        options.InjectJavascript("/swagger-ui/custom.js");
+        options.InjectStylesheet("/swagger-ui/material.css");
+
+        options.Interceptors.RequestInterceptorFunction = "function (request) { return applicationRequestInterceptor(request); }";
+        options.Interceptors.ResponseInterceptorFunction = "function (response) { return applicationResponseInterceptor(response); }";
     }
 
     private string CreateEndpointUrl(ApiVersionDescription description)

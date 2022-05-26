@@ -31,6 +31,7 @@ public class AntiforgeryMiddleware
 
         if (context.Response.StatusCode >= 200 && context.Response.StatusCode < 300)
         {
+            Console.WriteLine($"Update csrf toke. User auth: {context.User?.Identity?.Name}.");
             _antiforgeryTokenIssuer.IssueToken(context);
         }
     }
