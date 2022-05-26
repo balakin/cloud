@@ -1,4 +1,3 @@
-using System.Linq.Expressions;
 using CloudApi.Models;
 
 namespace CloudApi.V1.Dto;
@@ -13,8 +12,9 @@ public class SessionDto
 
     public bool IsCurrent { get; set; }
 
-    public static Expression<Func<Session, SessionDto>> SelectExpression = (session) => new SessionDto()
+    public void AddSessionInfo(SessionInfo info)
     {
-        Key = session.Key,
-    };
+        OperationSystem = info.OperationSystem;
+        Ip = info.Ip;
+    }
 }
