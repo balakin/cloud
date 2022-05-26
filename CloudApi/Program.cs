@@ -2,6 +2,8 @@ var builder = WebApplication.CreateBuilder(args);
 
 builder.Services.AddCloudOptions(builder.Configuration);
 
+builder.Services.AddCloudDevelopmentDatabase();
+
 builder.Services.AddCloudControllers();
 
 builder.Services.AddCloudVersioning();
