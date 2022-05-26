@@ -10,6 +10,8 @@ public static partial class CloudServiceCollectionExtensions
 
         services.Configure<AntiforgeryOptions>(configuration.GetSection(AntiforgeryOptions.SectionName));
 
+        services.Configure<AuthOptions>(configuration.GetSection(AuthOptions.SectionName));
+
         return services;
     }
 }

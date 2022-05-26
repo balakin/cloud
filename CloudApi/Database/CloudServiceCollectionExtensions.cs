@@ -7,7 +7,7 @@ public static partial class CloudServiceCollectionExtensions
 {
     public static IServiceCollection AddCloudDevelopmentDatabase(this IServiceCollection services)
     {
-        services.AddDbContext<CloudDatabase>((options) => options.UseSqlite("Filename=Cloud.db"));
+        services.AddDbContext<DatabaseContext>((options) => options.UseSqlite("Filename=Cloud.db"));
 
         return services;
     }

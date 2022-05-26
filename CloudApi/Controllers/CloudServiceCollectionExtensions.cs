@@ -14,7 +14,7 @@ public static partial class CloudServiceCollectionExtensions
                 var transformer = new RouteTokenTransformerConvention(slugify);
                 options.Conventions.Add(transformer);
 
-                options.Filters.Add<AntiforgeryFilter>();
+                // options.Filters.Add<AntiforgeryFilter>();
             });
 
         return services;

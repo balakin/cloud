@@ -6,6 +6,8 @@ builder.Services.AddCloudAntiforgery();
 
 builder.Services.AddCloudDevelopmentDatabase();
 
+builder.Services.AddCloudAuth();
+
 builder.Services.AddCloudControllers();
 
 builder.Services.AddCloudVersioning();
@@ -21,6 +23,8 @@ if (app.Environment.IsDevelopment())
     app.UseSwagger();
     app.UseSwaggerUI();
 }
+
+app.UseAuthentication();
 
 app.UseAuthorization();
 

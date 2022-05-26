@@ -17,7 +17,7 @@
 mono_crash.*
 
 # Database
-/Cloud.db
+/Cloud.db*
 
 # Build results
 [Dd]ebug/
