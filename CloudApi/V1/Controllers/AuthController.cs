@@ -79,7 +79,7 @@ public class AuthController : ControllerBase
     /// <response code="400">The sign in data is invalid or user already authorized or user can't authorize.</response>
     /// <response code="404">The user not found.</response>
     [HttpPost("[action]")]
-    [IssuesAntiforgeryToken]
+    [ResetAntiforgeryToken]
     [Consumes("application/json")]
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -127,7 +127,7 @@ public class AuthController : ControllerBase
     /// <response code="204">The user logout.</response>
     /// <response code="401">The user unauthorized.</response>
     [HttpPost("[action]")]
-    [IssuesAntiforgeryToken]
+    [ResetAntiforgeryToken]
     [Consumes("application/json")]
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status204NoContent)]
@@ -140,7 +140,6 @@ public class AuthController : ControllerBase
         }
 
         await _signInManager.SignOutAsync();
-        HttpContext.User = new ClaimsPrincipal();
         return NoContent();
     }
 }

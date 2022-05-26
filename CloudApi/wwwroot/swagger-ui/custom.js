@@ -1,20 +1,15 @@
 const INFORMATION_CONTAINER_CLASS_NAME = "information-container";
 
-(async function updateCsrfToken() {
-  try {
-    const response = await fetch("/api/v1/antiforgery", {
+async function applicationRequestInterceptor(request) {
+  let token = getCookieValue("CSRF-TOKEN");
+  if (!token) {
+    await fetch("/api/v1/antiforgery", {
       credentials: "include",
     });
-    if (!response.ok) {
-      console.error("Cannot update csrf token");
-    }
-  } catch (error) {
-    console.log(error);
+    token = getCookieValue("CSRF-TOKEN");
   }
-})();
 
-function applicationRequestInterceptor(request) {
-  request.headers["X-CSRF-TOKEN"] = getCookieValue("CSRF-TOKEN");
+  request.headers["X-CSRF-TOKEN"] = token;
   return request;
 }
 

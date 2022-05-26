@@ -20,7 +20,7 @@ public static partial class CloudServiceCollectionExtensions
                 options.HeaderName = cloudOptions.HeaderName;
             });
 
-        services.AddTransient<IAntiforgeryTokenIssuer, AntiforgeryTokenIssuer>();
+        services.AddTransient<IAntiforgeryTokenSender, AntiforgeryTokenSender>();
 
         return services;
     }

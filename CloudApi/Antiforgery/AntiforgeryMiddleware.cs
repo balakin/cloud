@@ -4,12 +4,12 @@ public class AntiforgeryMiddleware
 {
     private readonly RequestDelegate _next;
 
-    private readonly IAntiforgeryTokenIssuer _antiforgeryTokenIssuer;
+    private readonly IAntiforgeryTokenSender _antiforgeryTokenSender;
 
-    public AntiforgeryMiddleware(RequestDelegate next, IAntiforgeryTokenIssuer antiforgeryTokenIssuer)
+    public AntiforgeryMiddleware(RequestDelegate next, IAntiforgeryTokenSender antiforgeryTokenSender)
     {
         _next = next;
-        _antiforgeryTokenIssuer = antiforgeryTokenIssuer;
+        _antiforgeryTokenSender = antiforgeryTokenSender;
     }
 
     public async Task InvokeAsync(HttpContext context)
@@ -23,16 +23,24 @@ public class AntiforgeryMiddleware
             return;
         }
 
-        var attribute = endpoint.Metadata.GetMetadata<IssuesAntiforgeryTokenAttribute>();
-        if (attribute == null)
+        var issueAttribute = endpoint.Metadata.GetMetadata<IssuesAntiforgeryTokenAttribute>();
+        if (issueAttribute != null)
         {
+            if (context.Response.StatusCode >= 200 && context.Response.StatusCode < 300)
+            {
+                _antiforgeryTokenSender.SendToken(context);
+            }
+
             return;
         }
 
-        if (context.Response.StatusCode >= 200 && context.Response.StatusCode < 300)
+        var resetAttribute = endpoint.Metadata.GetMetadata<ResetAntiforgeryTokenAttribute>();
+        if (resetAttribute != null)
         {
-            Console.WriteLine($"Update csrf toke. User auth: {context.User?.Identity?.Name}.");
-            _antiforgeryTokenIssuer.IssueToken(context);
+            if (context.Response.StatusCode >= 200 && context.Response.StatusCode < 300)
+            {
+                _antiforgeryTokenSender.ResetToken(context);
+            }
         }
     }
 }
