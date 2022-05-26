@@ -1,6 +1,6 @@
 using System.Text.RegularExpressions;
 
-namespace CloudApi.Transformers;
+namespace CloudApi.Controllers;
 
 public class SlugifyParameterTransformer : IOutboundParameterTransformer
 {
