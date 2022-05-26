@@ -1,18 +1,12 @@
-using CloudApi.Transformers;
-using Microsoft.AspNetCore.Mvc.ApplicationModels;
-
 var builder = WebApplication.CreateBuilder(args);
 
-builder.Services.AddControllers((options) =>
-    {
-        var slugify = new SlugifyParameterTransformer();
-        var transformer = new RouteTokenTransformerConvention(slugify);
-        options.Conventions.Add(transformer);
-    });
+builder.Services.AddCloudOptions(builder.Configuration);
 
-builder.Services.AddEndpointsApiExplorer();
+builder.Services.AddCloudControllers();
 
-builder.Services.AddSwaggerGen();
+builder.Services.AddCloudVersioning();
+
+builder.Services.AddCloudSwagger();
 
 var app = builder.Build();
 
