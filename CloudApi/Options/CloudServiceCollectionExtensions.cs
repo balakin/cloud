@@ -8,6 +8,8 @@ public static partial class CloudServiceCollectionExtensions
     {
         services.Configure<ApplicationOptions>(configuration.GetSection(ApplicationOptions.SectionName));
 
+        services.Configure<AntiforgeryOptions>(configuration.GetSection(AntiforgeryOptions.SectionName));
+
         return services;
     }
 }

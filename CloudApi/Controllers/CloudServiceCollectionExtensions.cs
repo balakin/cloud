@@ -1,3 +1,4 @@
+using CloudApi.Antiforgery;
 using CloudApi.Controllers;
 using Microsoft.AspNetCore.Mvc.ApplicationModels;
 
@@ -12,6 +13,8 @@ public static partial class CloudServiceCollectionExtensions
                 var slugify = new SlugifyParameterTransformer();
                 var transformer = new RouteTokenTransformerConvention(slugify);
                 options.Conventions.Add(transformer);
+
+                options.Filters.Add<AntiforgeryFilter>();
             });
 
         return services;
