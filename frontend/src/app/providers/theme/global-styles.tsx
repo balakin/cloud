@@ -23,6 +23,9 @@ export const GlobalStyles: FC = () => {
           width: '100%',
           height: '100%',
         },
+        'input::-ms-reveal, input::-ms-clear': {
+          display: 'none',
+        },
       }}
     />
   );

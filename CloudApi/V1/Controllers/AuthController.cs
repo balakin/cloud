@@ -1,6 +1,7 @@
 using System.Security.Claims;
 using CloudApi.Antiforgery;
 using CloudApi.Auth;
+using CloudApi.DataConverters;
 using CloudApi.Models;
 using CloudApi.V1.Dto;
 using Microsoft.AspNetCore.Identity;
@@ -21,16 +22,20 @@ public class AuthController : ControllerBase
 
     private readonly ISessionInfoSerializer _sessionInfoSerializer;
 
+    private readonly IdentityErrorToClientMapper _identityErrorToClientMapper;
+
     public AuthController(
         UserManager<CloudUser> userManager,
         SignInManager<CloudUser> signInManager,
         ISessionInfoCollector sessionInfoCollector,
-        ISessionInfoSerializer sessionInfoSerializer)
+        ISessionInfoSerializer sessionInfoSerializer,
+        IdentityErrorToClientMapper identityErrorToClientMapper)
     {
         _userManager = userManager;
         _signInManager = signInManager;
         _sessionInfoCollector = sessionInfoCollector;
         _sessionInfoSerializer = sessionInfoSerializer;
+        _identityErrorToClientMapper = identityErrorToClientMapper;
     }
 
     /// <summary>
@@ -49,7 +54,8 @@ public class AuthController : ControllerBase
     {
         if (User?.Identity?.IsAuthenticated == true)
         {
-            return ValidationProblem(title: "User already authenticated.");
+            ModelState.AddModelError("", "User already authenticated.");
+            return ValidationProblem(ModelState);
         }
 
         CloudUser user = signUpDto.ToModel();
@@ -58,10 +64,10 @@ public class AuthController : ControllerBase
         IdentityResult result = await _userManager.CreateAsync(user, password);
         if (!result.Succeeded)
         {
-            Console.WriteLine("Drop user");
-            foreach (var error in result.Errors)
+            foreach (var identityError in result.Errors)
             {
-                Console.WriteLine(error.Description);
+                var error = _identityErrorToClientMapper.Map(identityError);
+                ModelState.AddModelError(error.FieldName, error.Description);
             }
 
             return ValidationProblem(ModelState);
@@ -89,25 +95,29 @@ public class AuthController : ControllerBase
     {
         if (User?.Identity?.IsAuthenticated == true)
         {
-            return ValidationProblem(title: "User already authenticated.");
+            ModelState.AddModelError("", "User already authenticated");
+            return ValidationProblem(ModelState);
         }
 
         CloudUser user = await _userManager.FindByNameAsync(signInDto.UserName);
         if (user == null)
         {
-            return ValidationProblem(title: "Invalid username or password");
+            ModelState.AddModelError("", "Invalid username or password");
+            return ValidationProblem(ModelState);
         }
 
         bool isValidPassword = await _userManager.CheckPasswordAsync(user, signInDto.Password);
         if (!isValidPassword)
         {
-            return ValidationProblem(title: "Invalid username or password");
+            ModelState.AddModelError("", "Invalid username or password");
+            return ValidationProblem(ModelState);
         }
 
         bool canSignIn = await _signInManager.CanSignInAsync(user);
         if (!canSignIn)
         {
-            return ValidationProblem(title: "Invalid username or password");
+            ModelState.AddModelError("", "Invalid username or password");
+            return ValidationProblem(ModelState);
         }
 
         SessionInfo sessionInfo = _sessionInfoCollector.Collect(HttpContext);

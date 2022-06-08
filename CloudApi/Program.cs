@@ -4,6 +4,8 @@ builder.Services.AddCloudOptions(builder.Configuration);
 
 builder.Services.AddCloudAntiforgery();
 
+builder.Services.AddCloudDataConverters();
+
 builder.Services.AddCloudDevelopmentDatabase();
 
 builder.Services.AddCloudAuth();
