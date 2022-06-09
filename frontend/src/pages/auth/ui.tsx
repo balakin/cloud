@@ -1,4 +1,4 @@
-import { alpha, Box, Link as MuiLink, styled, Typography } from '@mui/material';
+import { alpha, Box, Container, Link as MuiLink, styled, Typography } from '@mui/material';
 import { AuthGuard } from 'entities/viewer';
 import { useLocation } from 'react-router-dom';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
@@ -16,6 +16,12 @@ const Root = styled(Box)(() => ({
   alignItems: 'center',
   overflow: 'hidden',
   background: "url('/images/background.jpg') no-repeat center/cover",
+}));
+
+const FormContainer = styled(Container)(() => ({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
 }));
 
 const FormCard = styled('div')(({ theme }) => ({
@@ -39,11 +45,13 @@ export function AuthPage() {
   return (
     <AuthGuard role="anonymous">
       <Root>
-        <SwitchTransition>
-          <CSSTransition key={location.key} timeout={250} classNames={createAnimationClassNames('fade', classes)}>
-            <FormCard>{isSignIn ? <SignInForm /> : <SignUpForm />}</FormCard>
-          </CSSTransition>
-        </SwitchTransition>
+        <FormContainer maxWidth={false}>
+          <SwitchTransition>
+            <CSSTransition key={location.key} timeout={250} classNames={createAnimationClassNames('fade', classes)}>
+              <FormCard>{isSignIn ? <SignInForm /> : <SignUpForm />}</FormCard>
+            </CSSTransition>
+          </SwitchTransition>
+        </FormContainer>
         <Credits variant="subtitle2">
           Photo by{' '}
           <MuiLink
