@@ -31,28 +31,32 @@ const ClickableAvatar = styled(Avatar)(() => ({
 
 export type ViewerAvatarProps = {
   onClick?: MouseEventHandler<HTMLDivElement>;
+  width?: number;
+  height?: number;
 };
 
-export const ViewerAvatar: FC<ViewerAvatarProps> = forwardRef<HTMLDivElement, ViewerAvatarProps>(({ onClick }, ref) => {
-  const viewer = useViewer();
+export const ViewerAvatar: FC<ViewerAvatarProps> = forwardRef<HTMLDivElement, ViewerAvatarProps>(
+  ({ onClick, width, height }, ref) => {
+    const viewer = useViewer();
 
-  if (!viewer) {
-    return null;
+    if (!viewer) {
+      return null;
+    }
+
+    if (onClick) {
+      return <ClickableAvatar ref={ref} onClick={onClick} {...stringAvatar(viewer.userName, width, height)} />;
+    }
+
+    return <Avatar ref={ref} {...stringAvatar(viewer.userName, width, height)} />;
   }
+);
 
-  if (onClick) {
-    return <ClickableAvatar ref={ref} onClick={onClick} {...stringAvatar(viewer.userName)} />;
-  }
-
-  return <Avatar ref={ref} {...stringAvatar(viewer.userName)} />;
-});
-
-function stringAvatar(name: string) {
+function stringAvatar(name: string, width?: number, height?: number) {
   return {
     sx: {
       bgcolor: 'primary.main',
-      width: 36,
-      height: 36,
+      width: width ?? 36,
+      height: height ?? 36,
     },
     children: `${name[0].toUpperCase()}`,
   };
