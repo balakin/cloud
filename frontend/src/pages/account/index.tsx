@@ -1,32 +1,20 @@
-import { Box, CircularProgress, Stack, styled, Typography } from '@mui/material';
+import { CircularProgress, Typography } from '@mui/material';
 import { AuthGuard, useViewer, ViewerUserName } from 'entities/viewer';
 import { LogoutButton } from 'features/logout';
 import { FC } from 'react';
-
-const Root = styled(Box)(() => ({
-  height: '100%',
-  width: '100%',
-  display: 'flex',
-  flexDirection: 'column',
-  justifyContent: 'center',
-  alignItems: 'center',
-}));
-
-const Panel = styled(Stack)(() => ({
-  display: 'flex',
-  flexDirection: 'column',
-  alignItems: 'center',
-  maxWidth: '450px',
-  width: '100%',
-}));
+import { Helmet } from 'react-helmet';
+import { Page, PageContainer } from 'shared/ui/page';
 
 export const AccountPage: FC = () => {
   const viewer = useViewer();
 
   return (
     <AuthGuard role="user">
-      <Root>
-        <Panel spacing={3}>
+      <Page>
+        <Helmet>
+          <title>Account | Cloud</title>
+        </Helmet>
+        <PageContainer>
           {viewer ? (
             <>
               <Typography variant="h3">
@@ -37,8 +25,8 @@ export const AccountPage: FC = () => {
           ) : (
             <CircularProgress />
           )}
-        </Panel>
-      </Root>
+        </PageContainer>
+      </Page>
     </AuthGuard>
   );
 };

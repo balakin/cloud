@@ -1,6 +1,7 @@
 import { alpha, Box, Container, Link as MuiLink, styled, Typography } from '@mui/material';
 import { AuthGuard } from 'entities/viewer';
 import { FC } from 'react';
+import { Helmet } from 'react-helmet';
 import { useLocation, useParams } from 'react-router-dom';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
 import { UnitRoutesProvider } from 'shared/contexts/unit-routes-context';
@@ -59,6 +60,9 @@ export const AuthPage: FC<AuthPageProps> = ({ usedRoutes }) => {
 
   return (
     <AuthGuard role="anonymous">
+      <Helmet>
+        <title>{isSignIn ? 'Sign In | Cloud' : 'Sign Up | Cloud'}</title>
+      </Helmet>
       <UnitRoutesProvider routes={unitRoutes}>
         <Root>
           <FormContainer maxWidth={false}>

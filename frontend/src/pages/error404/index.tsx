@@ -1,7 +1,8 @@
-import { Box, Stack, styled, Typography } from '@mui/material';
+import { Container, Stack, styled, Typography } from '@mui/material';
 import { FC } from 'react';
+import { Helmet } from 'react-helmet';
 
-const Root = styled(Box)(() => ({
+const Root = styled(Container)(() => ({
   height: '100%',
   width: '100%',
   display: 'flex',
@@ -21,6 +22,9 @@ const Panel = styled(Stack)(() => ({
 export const Error404Page: FC = () => {
   return (
     <Root>
+      <Helmet>
+        <title>Not Found | Cloud</title>
+      </Helmet>
       <Panel spacing={1}>
         <Typography variant="h4">404</Typography>
         <Typography variant="h5">Page Not Found</Typography>

@@ -1,7 +1,5 @@
-import { Container } from '@mui/material';
 import { Navigate, Outlet, Route, Routes } from 'react-router-dom';
 import { Header } from 'widgets/header';
-import { PageContent } from 'widgets/page-content';
 import { AccountPage } from './account';
 import { AuthPage } from './auth';
 import { Error404Page } from './error404';
@@ -32,11 +30,7 @@ export function Routing() {
                 account: '/account',
               }}
             />
-            <PageContent>
-              <Container maxWidth={false}>
-                <Outlet />
-              </Container>
-            </PageContent>
+            <Outlet />
           </>
         }
       >

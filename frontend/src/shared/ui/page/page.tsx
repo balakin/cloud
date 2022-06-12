@@ -1,15 +1,15 @@
 import { styled } from '@mui/material';
 import { FC, PropsWithChildren } from 'react';
 
-const Root = styled('main')(() => ({
+const Root = styled('div')(() => ({
   flex: '1 0 auto',
   display: 'flex',
   overflow: 'auto',
   WebkitOverflowScrolling: 'touch',
 }));
 
-export type PageContentProps = PropsWithChildren<{}>;
+export type PageProps = PropsWithChildren<{}>;
 
-export const PageContent: FC<PageContentProps> = ({ children }) => {
+export const Page: FC<PageProps> = ({ children }) => {
   return <Root>{children}</Root>;
 };
