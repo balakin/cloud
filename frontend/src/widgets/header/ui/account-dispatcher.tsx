@@ -1,9 +1,21 @@
-import { Box, Button, Divider, Popover, Stack, styled, Typography } from '@mui/material';
+import {
+  Box,
+  Button,
+  Divider,
+  List,
+  ListItem,
+  ListItemButton,
+  ListItemText,
+  Popover,
+  Stack,
+  styled,
+  Typography,
+} from '@mui/material';
 import { ViewerAvatar, ViewerUserName } from 'entities/viewer';
 import { useIsAuth } from 'entities/viewer/hooks';
 import { LogoutButton } from 'features/logout';
 import { FC, MouseEventHandler, useState } from 'react';
-import { Link, useLocation } from 'react-router-dom';
+import { Link } from 'react-router-dom';
 import { useUnitRoutes } from 'shared/contexts/unit-routes-context';
 import { HeaderRoutes } from '../types';
 
@@ -20,19 +32,8 @@ const PopupContent = styled(Box)(() => ({
   width: '100%',
 }));
 
-const TextLink = styled(Link)(({ theme }) => ({
-  ...theme.typography.body1,
-  color: theme.palette.text.primary,
-  textDecoration: 'none',
-
-  '&:hover, &:visited': {
-    color: theme.palette.text.primary,
-  },
-}));
-
 const Authorized: FC = () => {
   const routes = useUnitRoutes<HeaderRoutes>();
-  const location = useLocation();
   const [anchorEl, setAnchorEl] = useState<HTMLDivElement | null>(null);
 
   const handleClick: MouseEventHandler<HTMLDivElement> = (event) => {
@@ -65,16 +66,20 @@ const Authorized: FC = () => {
         <PopupContent>
           <Stack sx={{ p: 1 }} direction="row" spacing={1} alignItems="center">
             <ViewerAvatar />
-            {location.pathname === routes.account ? (
-              <Typography variant="body1">
-                <ViewerUserName />
-              </Typography>
-            ) : (
-              <TextLink to={routes.account}>
-                <ViewerUserName />
-              </TextLink>
-            )}
+            <Typography variant="body1">
+              <ViewerUserName />
+            </Typography>
           </Stack>
+          <Divider />
+          <nav>
+            <List>
+              <ListItem disablePadding>
+                <ListItemButton component={Link} to={routes.account}>
+                  <ListItemText primary="Account" />
+                </ListItemButton>
+              </ListItem>
+            </List>
+          </nav>
           <Divider />
           <Box sx={{ p: 1 }}>
             <LogoutButton size="small" />
