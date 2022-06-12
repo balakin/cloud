@@ -1,5 +1,5 @@
-import { Box, Stack, styled, Typography } from '@mui/material';
-import { AuthGuard, ViewerUserName } from 'entities/viewer';
+import { Box, CircularProgress, Stack, styled, Typography } from '@mui/material';
+import { AuthGuard, useViewer, ViewerUserName } from 'entities/viewer';
 import { LogoutButton } from 'features/logout';
 import { FC } from 'react';
 
@@ -21,14 +21,22 @@ const Panel = styled(Stack)(() => ({
 }));
 
 export const AccountPage: FC = () => {
+  const viewer = useViewer();
+
   return (
     <AuthGuard role="user">
       <Root>
         <Panel spacing={3}>
-          <Typography variant="h3">
-            <ViewerUserName />
-          </Typography>
-          <LogoutButton />
+          {viewer ? (
+            <>
+              <Typography variant="h3">
+                <ViewerUserName />
+              </Typography>
+              <LogoutButton />
+            </>
+          ) : (
+            <CircularProgress />
+          )}
         </Panel>
       </Root>
     </AuthGuard>

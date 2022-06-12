@@ -7,23 +7,40 @@ import { AuthPage } from './auth';
 import { Error404Page } from './error404';
 
 export function Routing() {
+  const auth = (
+    <AuthPage
+      usedRoutes={{
+        signIn: '/sign-in',
+        signUp: '/sign-up',
+        account: '/account',
+      }}
+    />
+  );
+
   return (
     <Routes>
-      <Route path="/sign-in" element={<AuthPage />} />
-      <Route path="/sign-up" element={<AuthPage />} />
+      <Route path="/sign-in" element={auth} />
+      <Route path="/sign-up" element={auth} />
       <Route
         path="/"
         element={
           <>
-            <Header />
+            <Header
+              usedRoutes={{
+                signIn: '/sign-in',
+                signUp: '/sign-up',
+                account: '/account',
+              }}
+            />
             <PageContent>
-              <Container>
+              <Container maxWidth={false}>
                 <Outlet />
               </Container>
             </PageContent>
           </>
         }
       >
+        <Route index element={<Navigate to="/404" replace />} />
         <Route path="account" element={<AccountPage />} />
         <Route path="404" element={<Error404Page />} />
       </Route>

@@ -1,1 +1,1 @@
-export const HEIGHT = '50px';
+export const HEIGHT = 50;
