@@ -13,6 +13,11 @@ export type SignInDto = {
   password: string;
 };
 
+export type ChangePasswordDto = {
+  currentPassword: string;
+  newPassword: string;
+};
+
 export type ProblemDetails = {
   type: string;
   title: string;

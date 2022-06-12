@@ -1,7 +1,7 @@
 import { Stack, Typography } from '@mui/material';
 import { Form, FormikProvider } from 'formik';
 import { FC } from 'react';
-import { SignUpDto } from 'shared/api';
+import { cloudApi, SignUpDto } from 'shared/api';
 import { useCloudFormik } from 'shared/formik';
 import { FormError, FormPasswordField, FormStack, FormSubmitButton, FormTextField } from 'shared/ui/form';
 import { Logo } from 'shared/ui/logo';
@@ -21,13 +21,7 @@ export const RegistrationForm: FC<RegistrationFormProps> = ({ onSuccess }) => {
     },
     validationSchema: Yup.object({
       userName: Yup.string().required('Required field'),
-      password: Yup.string()
-        .required('Required field')
-        .matches(/[^a-z0-9]+/i, 'Passwords must have at least one non alphanumeric character')
-        .matches(/\d+/i, "Passwords must have at least one digit ('0'-'9')")
-        .matches(/[A-Z]+/, "Passwords must have at least one uppercase ('A'-'Z')")
-        .matches(/[a-z]+/, "Passwords must have at least one lowercase ('a'-'z')")
-        .min(6, 'Passwords must be at least 6 characters'),
+      password: cloudApi.validationSchemes.password().required('Required field'),
       repeatPassword: Yup.string()
         .oneOf([Yup.ref('password')], "Passwords don't match")
         .required('Required field'),

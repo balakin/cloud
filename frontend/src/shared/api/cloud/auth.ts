@@ -1,6 +1,6 @@
 import { AxiosPromise } from 'axios';
 import { api } from './base';
-import { SignInDto, SignUpDto } from './models';
+import { ChangePasswordDto, SignInDto, SignUpDto } from './models';
 
 const BASE_URL = '/api/v1/auth';
 
@@ -14,4 +14,8 @@ export function signIn(data: SignInDto): AxiosPromise<void> {
 
 export function logout(): AxiosPromise<void> {
   return api.post(`${BASE_URL}/logout`);
+}
+
+export function changePassword(data: ChangePasswordDto): AxiosPromise<void> {
+  return api.put(`${BASE_URL}/password`, data);
 }

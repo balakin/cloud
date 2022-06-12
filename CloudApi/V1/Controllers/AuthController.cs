@@ -152,4 +152,56 @@ public class AuthController : ControllerBase
         await _signInManager.SignOutAsync();
         return NoContent();
     }
+
+    /// <summary>
+    /// Changes user password.
+    /// </summary>
+    /// <returns>No content.</returns>
+    /// <response code="204">The user password changed.</response>
+    /// <response code="400">The current or new password is invalid.</response>
+    /// <response code="401">The user unauthorized.</response>
+    [HttpPut("password")]
+    [Consumes("application/json")]
+    [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<IActionResult> ChangePassword(ChangePasswordDto changePasswordDto)
+    {
+        if (User?.Identity?.IsAuthenticated == false)
+        {
+            return Unauthorized();
+        }
+
+        CloudUser user = await _userManager.FindByNameAsync(User!.Identity!.Name);
+        if (user == null)
+        {
+            throw new NullReferenceException(nameof(user));
+        }
+
+        bool isValidPassword = await _userManager.CheckPasswordAsync(user, changePasswordDto.CurrentPassword);
+        if (!isValidPassword)
+        {
+            ModelState.AddModelError(nameof(ChangePasswordDto.CurrentPassword), "Incorrect password");
+            return ValidationProblem(ModelState);
+        }
+
+        IdentityResult result = await _userManager.ChangePasswordAsync(
+            user,
+            changePasswordDto.CurrentPassword,
+            changePasswordDto.NewPassword);
+
+        if (!result.Succeeded)
+        {
+            foreach (var identityError in result.Errors)
+            {
+                var error = _identityErrorToClientMapper.Map(identityError);
+                ModelState.AddModelError(nameof(ChangePasswordDto.NewPassword), error.Description);
+            }
+
+            return ValidationProblem(ModelState);
+        }
+
+        return NoContent();
+    }
 }

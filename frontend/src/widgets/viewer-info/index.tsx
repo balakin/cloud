@@ -1,6 +1,7 @@
-import { Box, CircularProgress, Stack, Typography } from '@mui/material';
+import { CircularProgress, Stack, Typography } from '@mui/material';
 import { useViewer, ViewerAvatar, ViewerUserName } from 'entities/viewer';
 import { FC } from 'react';
+import { InfoBlock } from 'shared/ui/blocks';
 
 export type ViewerInfoProps = {};
 
@@ -15,14 +16,11 @@ export const ViewerInfo: FC<ViewerInfoProps> = () => {
     <>
       <Stack spacing={2} direction="row">
         <ViewerAvatar width={80} height={80} />
-        <Box>
-          <Typography variant="caption" sx={{ color: 'text.secondary', lineHeight: '1em' }}>
-            Username
-          </Typography>
-          <Typography variant="h5">
+        <InfoBlock label="Username">
+          <Typography variant="h6">
             <ViewerUserName />
           </Typography>
-        </Box>
+        </InfoBlock>
       </Stack>
     </>
   );
