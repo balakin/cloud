@@ -12,6 +12,10 @@ public class DatabaseContext : IdentityDbContext<CloudUser>
 
     public DbSet<Session> Sessions { get; set; } = null!;
 
+    public DbSet<CloudFolder> Folders { get; set; } = null!;
+
+    public DbSet<CloudFileInfo> FilesInfo { get; set; } = null!;
+
     protected override void OnModelCreating(ModelBuilder builder)
     {
         base.OnModelCreating(builder);

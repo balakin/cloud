@@ -11,13 +11,68 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CloudApi.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20220526051043_Init")]
+    [Migration("20220613143942_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
         {
 #pragma warning disable 612, 618
             modelBuilder.HasAnnotation("ProductVersion", "6.0.5");
+
+            modelBuilder.Entity("CloudApi.Models.CloudFileInfo", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("FolderId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("TEXT");
+
+                    b.Property<long>("Size")
+                        .HasColumnType("INTEGER");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("FolderId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("FilesInfo");
+                });
+
+            modelBuilder.Entity("CloudApi.Models.CloudFolder", b =>
+                {
+                    b.Property<string>("Id")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("Name")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("ParentId")
+                        .HasColumnType("TEXT");
+
+                    b.Property<string>("UserId")
+                        .IsRequired()
+                        .HasColumnType("TEXT");
+
+                    b.HasKey("Id");
+
+                    b.HasIndex("ParentId");
+
+                    b.HasIndex("UserId");
+
+                    b.ToTable("Folders");
+                });
 
             modelBuilder.Entity("CloudApi.Models.CloudUser", b =>
                 {
@@ -232,6 +287,40 @@ namespace CloudApi.Migrations
                     b.ToTable("UserTokens", (string)null);
                 });
 
+            modelBuilder.Entity("CloudApi.Models.CloudFileInfo", b =>
+                {
+                    b.HasOne("CloudApi.Models.CloudFolder", "Folder")
+                        .WithMany("FilesInfo")
+                        .HasForeignKey("FolderId");
+
+                    b.HasOne("CloudApi.Models.CloudUser", "User")
+                        .WithMany("FilesInfo")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Folder");
+
+                    b.Navigation("User");
+                });
+
+            modelBuilder.Entity("CloudApi.Models.CloudFolder", b =>
+                {
+                    b.HasOne("CloudApi.Models.CloudFolder", "Parent")
+                        .WithMany("Folders")
+                        .HasForeignKey("ParentId");
+
+                    b.HasOne("CloudApi.Models.CloudUser", "User")
+                        .WithMany("Folders")
+                        .HasForeignKey("UserId")
+                        .OnDelete(DeleteBehavior.Cascade)
+                        .IsRequired();
+
+                    b.Navigation("Parent");
+
+                    b.Navigation("User");
+                });
+
             modelBuilder.Entity("CloudApi.Models.Session", b =>
                 {
                     b.HasOne("CloudApi.Models.CloudUser", "User")
@@ -294,8 +383,19 @@ namespace CloudApi.Migrations
                         .IsRequired();
                 });
 
+            modelBuilder.Entity("CloudApi.Models.CloudFolder", b =>
+                {
+                    b.Navigation("FilesInfo");
+
+                    b.Navigation("Folders");
+                });
+
             modelBuilder.Entity("CloudApi.Models.CloudUser", b =>
                 {
+                    b.Navigation("FilesInfo");
+
+                    b.Navigation("Folders");
+
                     b.Navigation("Sessions");
                 });
 #pragma warning restore 612, 618

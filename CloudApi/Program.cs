@@ -8,6 +8,8 @@ builder.Services.AddCloudDataConverters();
 
 builder.Services.AddCloudDevelopmentDatabase();
 
+builder.Services.AddCloudStorage();
+
 builder.Services.AddCloudAuth();
 
 builder.Services.AddCloudControllers();
