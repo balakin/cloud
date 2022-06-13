@@ -51,7 +51,11 @@ public class SessionsController : ControllerBase
     public async Task<ActionResult<SessionDto>> GetSession(string key)
     {
         string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value!;
-        string currentKey = User.FindFirst(AuthConstants.SessionKeyClaimType)?.Value!;
+        string? currentKey = _sessionInfoSerializer.ExtractSessionKey(User);
+        if (currentKey == null)
+        {
+            throw new NullReferenceException(nameof(currentKey));
+        }
 
         Session? session = await _database.Sessions.FindAsync(key);
         if (session == null || session.UserId != userId)
@@ -182,7 +186,7 @@ public class SessionsController : ControllerBase
     public async Task<IActionResult> DeleteAllSession()
     {
         string userId = User.FindFirst(ClaimTypes.NameIdentifier)?.Value!;
-        string? key = User.FindFirst(AuthConstants.SessionKeyClaimType)?.Value;
+        string? key = _sessionInfoSerializer.ExtractSessionKey(User);
         if (key == null)
         {
             throw new NullReferenceException(nameof(key));
