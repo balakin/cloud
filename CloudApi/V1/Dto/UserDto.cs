@@ -8,11 +8,15 @@ public class UserDto
 
     public string UserName { get; set; } = string.Empty;
 
-    public UserDto() { }
+    public string? AvatarId { get; set; }
 
-    public UserDto(CloudUser user)
+    public static UserDto FromModel(CloudUser user)
     {
-        Id = user.Id;
-        UserName = user.UserName;
+        return new UserDto()
+        {
+            Id = user.Id,
+            UserName = user.UserName,
+            AvatarId = user.AvatarId
+        };
     }
 }

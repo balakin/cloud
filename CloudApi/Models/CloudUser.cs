@@ -9,4 +9,6 @@ public class CloudUser : IdentityUser
     public virtual ICollection<CloudFolder>? Folders { get; set; }
 
     public virtual ICollection<CloudFileInfo>? FilesInfo { get; set; }
+
+    public string? AvatarId { get; set; }
 }

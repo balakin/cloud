@@ -36,7 +36,7 @@ public class StorageProvider : IStorageProvider
         }
     }
 
-    public async Task SaveFileAsync(IFormFile file, string userId, string cloudFolderId)
+    public async Task<string> SaveFileAsync(IFormFile file, string userId, string? cloudFolderId)
     {
         string id = await _cloudFileProvider.SaveFileAsync(file);
         var fileInfo = new CloudFileInfo()
@@ -46,8 +46,33 @@ public class StorageProvider : IStorageProvider
             FolderId = cloudFolderId,
             UserId = userId,
             Size = file.Length,
+            ContentType = file.ContentType,
+            IsSystemFile = false,
         };
 
+        await SaveFileInfo(fileInfo);
+        return id;
+    }
+
+    public async Task<string> SaveSystemFileAsync(IFormFile file, string userId)
+    {
+        string id = await _cloudFileProvider.SaveFileAsync(file);
+        var fileInfo = new CloudFileInfo()
+        {
+            Id = id,
+            Name = file.FileName,
+            UserId = userId,
+            Size = file.Length,
+            ContentType = file.ContentType,
+            IsSystemFile = true,
+        };
+
+        await SaveFileInfo(fileInfo);
+        return id;
+    }
+
+    private async Task SaveFileInfo(CloudFileInfo fileInfo)
+    {
         try
         {
             _databaseContext.FilesInfo.Add(fileInfo);
@@ -55,21 +80,22 @@ public class StorageProvider : IStorageProvider
         }
         catch (Exception exception)
         {
-            _cloudFileProvider.DeleteFile(id);
-            throw exception;
+            _cloudFileProvider.DeleteFile(fileInfo.Id);
+            throw new Exception("Database update exception", exception);
         }
     }
 
-    public async Task CreateFolderAsync(string name, string userId, string? parentFolderId)
+    public async Task<string> CreateFolderAsync(string name, string userId, string? parentFolderId)
     {
         if (string.IsNullOrWhiteSpace(name))
         {
             throw new NullReferenceException(name);
         }
 
+        string id = Guid.NewGuid().ToString();
         var folder = new CloudFolder()
         {
-            Id = Guid.NewGuid().ToString(),
+            Id = id,
             Name = name,
             UserId = userId,
             ParentId = parentFolderId
@@ -77,6 +103,8 @@ public class StorageProvider : IStorageProvider
 
         _databaseContext.Folders.Add(folder);
         await _databaseContext.SaveChangesAsync();
+
+        return id;
     }
 
     public async Task DeleteFolderAsync(string id)

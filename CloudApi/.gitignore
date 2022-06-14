@@ -19,6 +19,10 @@ mono_crash.*
 # Database
 /Cloud.db*
 
+# Files
+/Files/**/*
+!/Files/.gitkeep
+
 # Build results
 [Dd]ebug/
 [Dd]ebugPublic/
