@@ -39,12 +39,12 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    /// Sign up user.
+    /// Sign up user
     /// </summary>
-    /// <param name="signUpDto">User sign up data.</param>
-    /// <returns>No content.</returns>
-    /// <response code="204">User registered.</response>
-    /// <response code="400">The sign up data is invalid or the user already authorized or the user already exists.</response>
+    /// <param name="signUpDto">User sign up data</param>
+    /// <returns>No content</returns>
+    /// <response code="204">User registered</response>
+    /// <response code="400">The sign up data is invalid or the user already authorized or the user already exists</response>
     [HttpPost("[action]")]
     [Consumes("application/json")]
     [Produces("application/json")]
@@ -77,13 +77,13 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    /// Authorizes an user by cookies.
+    /// Authorizes an user by cookies
     /// </summary>
-    /// <param name="signInDto">User sign in data.</param>
+    /// <param name="signInDto">User sign in data</param>
     /// <returns>No content.</returns>
-    /// <response code="204">The user authorized.</response>
-    /// <response code="400">The sign in data is invalid or user already authorized or user can't authorize.</response>
-    /// <response code="404">The user not found.</response>
+    /// <response code="204">The user authorized</response>
+    /// <response code="400">The sign in data is invalid or user already authorized or user can't authorize</response>
+    /// <response code="404">The user not found</response>
     [HttpPost("[action]")]
     [ResetAntiforgeryToken]
     [Consumes("application/json")]
@@ -131,11 +131,11 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    /// Logs out the user.
+    /// Logs out the user
     /// </summary>
-    /// <returns>No content.</returns>
-    /// <response code="204">The user logout.</response>
-    /// <response code="401">The user unauthorized.</response>
+    /// <returns>No content</returns>
+    /// <response code="204">The user logout</response>
+    /// <response code="401">The user unauthorized</response>
     [HttpPost("[action]")]
     [ResetAntiforgeryToken]
     [Consumes("application/json")]
@@ -154,12 +154,12 @@ public class AuthController : ControllerBase
     }
 
     /// <summary>
-    /// Changes user password.
+    /// Changes user password
     /// </summary>
-    /// <returns>No content.</returns>
-    /// <response code="204">The user password changed.</response>
-    /// <response code="400">The current or new password is invalid.</response>
-    /// <response code="401">The user unauthorized.</response>
+    /// <returns>No content</returns>
+    /// <response code="204">The user password changed</response>
+    /// <response code="400">The current or new password is invalid</response>
+    /// <response code="401">The user unauthorized</response>
     [HttpPut("password")]
     [Consumes("application/json")]
     [Produces("application/json")]

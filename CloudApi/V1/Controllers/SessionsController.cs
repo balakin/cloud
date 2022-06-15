@@ -33,14 +33,14 @@ public class SessionsController : ControllerBase
     }
 
     /// <summary>
-    /// Retrieves user session by key.
+    /// Retrieves user session by key
     /// </summary>
-    /// <param name="key">The key of session.</param>
-    /// <returns>The user session.</returns>
-    /// <response code="200">The successfully retrieved current user session.</response>
-    /// <response code="400">The session key is invalid.</response>
-    /// <response code="401">The user unauthorized.</response>
-    /// <response code="404">The user session was't found.</response>
+    /// <param name="key">The key of session</param>
+    /// <returns>The user session</returns>
+    /// <response code="200">The successfully retrieved current user session</response>
+    /// <response code="400">The session key is invalid</response>
+    /// <response code="401">The user unauthorized</response>
+    /// <response code="404">The user session was't found</response>
     [HttpGet("{key}")]
     [Consumes("application/json")]
     [Produces("application/json")]
@@ -69,11 +69,11 @@ public class SessionsController : ControllerBase
     }
 
     /// <summary>
-    /// Retrieves current user session.
+    /// Retrieves current user session
     /// </summary>
-    /// <returns>Current user session.</returns>
-    /// <response code="200">The successfully retrieved current user session.</response>
-    /// <response code="401">The user unauthorized.</response>
+    /// <returns>Current user session</returns>
+    /// <response code="200">The successfully retrieved current user session</response>
+    /// <response code="401">The user unauthorized</response>
     [HttpGet("@current")]
     [Consumes("application/json")]
     [Produces("application/json")]
@@ -99,11 +99,11 @@ public class SessionsController : ControllerBase
     }
 
     /// <summary>
-    /// Retrieves all user session.
+    /// Retrieves all user session
     /// </summary>
-    /// <returns>User sessions.</returns>
-    /// <response code="200">The successfully retrieved user sessions.</response>
-    /// <response code="401">The user unauthorized.</response>
+    /// <returns>User sessions</returns>
+    /// <response code="200">The successfully retrieved user sessions</response>
+    /// <response code="401">The user unauthorized</response>
     [HttpGet]
     [Consumes("application/json")]
     [Produces("application/json")]
@@ -132,14 +132,14 @@ public class SessionsController : ControllerBase
     }
 
     /// <summary>
-    /// Deletes user sessions by key.
+    /// Deletes user sessions by key
     /// </summary>
-    /// <param href="key">The key of session.</param>
-    /// <returns>No content.</returns>
-    /// <response code="204">User session was successfully deleted.</response>
-    /// <response code="400">The key of session invalid or the session being deleted is equal to the current one.</response>
-    /// <response code="401">The user unauthorized.</response>
-    /// <response code="401">The session wasn't found.</response>
+    /// <param href="key">The key of session</param>
+    /// <returns>No content</returns>
+    /// <response code="204">User session was successfully deleted</response>
+    /// <response code="400">The key of session invalid or the session being deleted is equal to the current one</response>
+    /// <response code="401">The user unauthorized</response>
+    /// <response code="401">The session wasn't found</response>
     [HttpDelete("{key}")]
     [Consumes("application/json")]
     [Produces("application/json")]
@@ -173,11 +173,11 @@ public class SessionsController : ControllerBase
     }
 
     /// <summary>
-    /// Deletes all user sessions except the current one.
+    /// Deletes all user sessions except the current one
     /// </summary>
-    /// <returns>No content.</returns>
-    /// <response code="204">User sessions were successfully deleted.</response>
-    /// <response code="401">The user unauthorized.</response>
+    /// <returns>No content</returns>
+    /// <response code="204">User sessions were successfully deleted</response>
+    /// <response code="401">The user unauthorized</response>
     [HttpDelete]
     [Consumes("application/json")]
     [Produces("application/json")]

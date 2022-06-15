@@ -35,11 +35,11 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
-    /// Returns authorized user.
+    /// Returns authorized user
     /// </summary>
-    /// <returns>Authorized user.</returns>
-    /// <response code="200">Returns authorized user.</response>
-    /// <response code="401">The user unauthorized.</response>
+    /// <returns>Authorized user</returns>
+    /// <response code="200">Returns authorized user</response>
+    /// <response code="401">The user unauthorized</response>
     [HttpGet("@[action]")]
     [Consumes("application/json")]
     [Produces("application/json")]
@@ -57,13 +57,13 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
-    /// Changes user avatar.
+    /// Changes user avatar
     /// </summary>
-    /// <param name="changeAvatarDto">New avatar.</param>
-    /// <returns>No content.</returns>
-    /// <response code="204">Avatar changed.</response>
-    /// <response code="400">Invalid new avatar.</response>
-    /// <response code="401">The user unauthorized.</response>
+    /// <param name="changeAvatarDto">New avatar</param>
+    /// <returns>No content</returns>
+    /// <response code="204">Avatar changed</response>
+    /// <response code="400">Invalid new avatar</response>
+    /// <response code="401">The user unauthorized</response>
     [HttpPut("@me/avatar")]
     [Consumes("multipart/form-data")]
     [Produces("application/json")]
@@ -119,12 +119,12 @@ public class UsersController : ControllerBase
     }
 
     /// <summary>
-    /// Deletes user avatar.
+    /// Deletes user avatar
     /// </summary>
-    /// <returns>No content.</returns>
-    /// <response code="204">User avatar was successfully deleted.</response>
-    /// <response code="401">The user unauthorized.</response>
-    /// <response code="404">The session wasn't found.</response>
+    /// <returns>No content</returns>
+    /// <response code="204">User avatar was successfully deleted</response>
+    /// <response code="401">The user unauthorized</response>
+    /// <response code="404">The session wasn't found</response>
     [HttpDelete("@me/avatar")]
     [Consumes("application/json")]
     [Produces("application/json")]

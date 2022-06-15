@@ -8,10 +8,10 @@ namespace CloudApi.V1.Controllers;
 public class AntiforgeryController : ControllerBase
 {
     /// <summary>
-    /// Issues new antiforgery token.
+    /// Issues new antiforgery token
     /// </summary>
-    /// <returns>No content.</returns>
-    /// <response code="204">The antiforgery token was issued successfully.</response>
+    /// <returns>No content</returns>
+    /// <response code="204">The antiforgery token was issued successfully</response>
     [HttpGet]
     [IssuesAntiforgeryToken]
     [Consumes("application/json")]

@@ -24,12 +24,12 @@ public class FilesController : ControllerBase
     }
 
     /// <summary>
-    /// Returns file by id.
+    /// Returns file by id
     /// </summary>
-    /// <returns>File.</returns>
-    /// <response code="200">Returns file.</response>
-    /// <response code="401">The user unauthorized.</response>
-    /// <response code="404">The file not found.</response>
+    /// <returns>File</returns>
+    /// <response code="200">Returns file</response>
+    /// <response code="401">The user unauthorized</response>
+    /// <response code="404">The file not found</response>
     [HttpGet("{id}")]
     [Consumes("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
@@ -54,12 +54,12 @@ public class FilesController : ControllerBase
     }
 
     /// <summary>
-    /// Returns file info by id.
+    /// Returns file info by id
     /// </summary>
-    /// <returns>File info.</returns>
-    /// <response code="200">Returns file info.</response>
-    /// <response code="401">The user unauthorized.</response>
-    /// <response code="404">The file not found.</response>
+    /// <returns>File info</returns>
+    /// <response code="200">Returns file info</response>
+    /// <response code="401">The user unauthorized</response>
+    /// <response code="404">The file not found</response>
     [HttpGet("{id}/info")]
     [Consumes("application/json")]
     [Produces("application/json")]
@@ -84,12 +84,12 @@ public class FilesController : ControllerBase
     }
 
     /// <summary>
-    /// Download file.
+    /// Download file
     /// </summary>
-    /// <returns>File.</returns>
-    /// <response code="200">Returns file.</response>
-    /// <response code="401">The user unauthorized.</response>
-    /// <response code="404">The file not found.</response>
+    /// <returns>File</returns>
+    /// <response code="200">Returns file</response>
+    /// <response code="401">The user unauthorized</response>
+    /// <response code="404">The file not found</response>
     [HttpGet("{id}/download")]
     [Consumes("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
