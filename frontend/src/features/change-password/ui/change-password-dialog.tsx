@@ -3,6 +3,7 @@ import { Form, FormikProvider } from 'formik';
 import { FC } from 'react';
 import { ChangePasswordDto, cloudApi } from 'shared/api';
 import { useCloudFormik } from 'shared/formik';
+import { nameof } from 'shared/helpers';
 import { FormError, FormPasswordField, FormStack, FormSubmitButton } from 'shared/ui/form';
 import * as Yup from 'yup';
 import { changePassword } from '../model';
@@ -39,8 +40,8 @@ export const ChangePasswordDialog: FC<ChangePasswordDialogProps> = ({ onClose, .
           <DialogContent>
             <FormStack>
               <FormError error={error} />
-              <FormPasswordField name="currentPassword" label="Current password" />
-              <FormPasswordField name="newPassword" label="New password" />
+              <FormPasswordField name={nameof<ChangePasswordDto>('currentPassword')} label="Current password" />
+              <FormPasswordField name={nameof<ChangePasswordDto>('newPassword')} label="New password" />
             </FormStack>
           </DialogContent>
           <DialogActions>

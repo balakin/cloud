@@ -3,6 +3,7 @@ import { Form, FormikProvider } from 'formik';
 import { FC } from 'react';
 import { SignInDto } from 'shared/api';
 import { useCloudFormik } from 'shared/formik';
+import { nameof } from 'shared/helpers';
 import { FormError, FormPasswordField, FormStack, FormSubmitButton, FormTextField } from 'shared/ui/form';
 import { Logo } from 'shared/ui/logo';
 import * as Yup from 'yup';
@@ -39,8 +40,8 @@ export const AuthByPasswordForm: FC<AuthByPasswordFormProps> = ({ onSuccess }) =
             </Typography>
           </Stack>
           <FormError error={error} />
-          <FormTextField name="userName" label="Username" />
-          <FormPasswordField name="password" label="Password" />
+          <FormTextField name={nameof<SignInDto>('userName')} label="Username" />
+          <FormPasswordField name={nameof<SignInDto>('password')} label="Password" />
           <FormSubmitButton>Sign In</FormSubmitButton>
         </FormStack>
       </Form>

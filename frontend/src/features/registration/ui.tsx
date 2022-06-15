@@ -3,6 +3,7 @@ import { Form, FormikProvider } from 'formik';
 import { FC } from 'react';
 import { cloudApi, SignUpDto } from 'shared/api';
 import { useCloudFormik } from 'shared/formik';
+import { nameof } from 'shared/helpers';
 import { FormError, FormPasswordField, FormStack, FormSubmitButton, FormTextField } from 'shared/ui/form';
 import { Logo } from 'shared/ui/logo';
 import * as Yup from 'yup';
@@ -12,8 +13,10 @@ export type RegistrationFormProps = {
   onSuccess: () => void;
 };
 
+type FormValues = SignUpDto & { repeatPassword: string };
+
 export const RegistrationForm: FC<RegistrationFormProps> = ({ onSuccess }) => {
-  const { error, formik } = useCloudFormik<SignUpDto & { repeatPassword: string }>({
+  const { error, formik } = useCloudFormik<FormValues>({
     initialValues: {
       userName: '',
       password: '',
@@ -23,7 +26,7 @@ export const RegistrationForm: FC<RegistrationFormProps> = ({ onSuccess }) => {
       userName: Yup.string().required('Required field'),
       password: cloudApi.validationSchemes.password().required('Required field'),
       repeatPassword: Yup.string()
-        .oneOf([Yup.ref('password')], "Passwords don't match")
+        .oneOf([Yup.ref(nameof<FormValues>('password'))], "Passwords don't match")
         .required('Required field'),
     }),
     onSubmit: async (dto) => {
@@ -43,9 +46,9 @@ export const RegistrationForm: FC<RegistrationFormProps> = ({ onSuccess }) => {
             </Typography>
           </Stack>
           <FormError error={error} />
-          <FormTextField name="userName" label="Username" />
-          <FormPasswordField name="password" label="Password" />
-          <FormPasswordField name="repeatPassword" label="Repeat password" />
+          <FormTextField name={nameof<FormValues>('userName')} label="Username" />
+          <FormPasswordField name={nameof<FormValues>('password')} label="Password" />
+          <FormPasswordField name={nameof<FormValues>('repeatPassword')} label="Repeat password" />
           <FormSubmitButton>Sign Up</FormSubmitButton>
         </FormStack>
       </Form>
