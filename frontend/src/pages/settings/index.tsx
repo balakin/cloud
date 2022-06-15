@@ -1,7 +1,6 @@
 import { Paper, Stack, Typography, useMediaQuery, useTheme } from '@mui/material';
 import { AuthGuard, ViewerUserName } from 'entities/viewer';
-import { AvatarSelector, ChangeAvatarButton } from 'features/change-avatar';
-import { DeleteAvatarButton } from 'features/change-avatar/ui/delete-avatar-button';
+import { AvatarSelector, ChangeAvatarButton, DeleteAvatarButton } from 'features/change-avatar';
 import { ChangePasswordButton } from 'features/change-password';
 import { FC } from 'react';
 import { Helmet } from 'react-helmet';

@@ -1,4 +1,4 @@
-import { LoadingButton, LoadingButtonProps } from '@mui/lab';
+import { LoadingButton, LoadingButtonProps } from 'shared/ui/buttons';
 import { useFormikContext } from 'formik';
 import { FC } from 'react';
 

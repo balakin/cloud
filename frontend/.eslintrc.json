@@ -1,0 +1,27 @@
+{
+  "extends": ["react-app", "react-app/jest"],
+  "rules": {
+    "no-restricted-imports": [
+      "error",
+      {
+        "paths": [
+          {
+            "name": "@mui/lab",
+            "importNames": ["LoadingButton", "LoadingButtonProps"],
+            "message": "Please use 'LoadingButton' and 'LoadingButtonProps' from 'shared/buttons'."
+          }
+        ],
+        "patterns": [
+          {
+            "message": "Please use top level import.",
+            "group": ["@mui/*/*", "!@mui/icons-material/*", "!@mui/material/colors"]
+          },
+          {
+            "message": "Please use top level import.",
+            "group": ["app/*", "pages/*", "widgets/*/*", "features/*/*", "entities/*/*", "shared/*/*/*"]
+          }
+        ]
+      }
+    ]
+  }
+}

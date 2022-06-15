@@ -1,3 +1,4 @@
+// eslint-disable-next-line no-restricted-imports
 import { LoadingButton as MuiLoadingButton } from '@mui/lab';
 import { ButtonProps } from '@mui/material';
 import { FC } from 'react';

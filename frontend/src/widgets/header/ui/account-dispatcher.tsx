@@ -11,8 +11,7 @@ import {
   styled,
   Typography,
 } from '@mui/material';
-import { ViewerAvatar, ViewerUserName } from 'entities/viewer';
-import { useIsAuth } from 'entities/viewer/hooks';
+import { ViewerAvatar, ViewerUserName, useIsAuth } from 'entities/viewer';
 import { LogoutButton } from 'features/logout';
 import { FC, MouseEventHandler, useState } from 'react';
 import { Link } from 'react-router-dom';

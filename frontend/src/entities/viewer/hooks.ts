@@ -12,16 +12,6 @@ export function useViewer() {
   return context?.viewer ?? null;
 }
 
-export function useRequiredViewer() {
-  const context = useViewerContext();
-
-  if (!context || !context.viewer) {
-    throw new Error('No viewer');
-  }
-
-  return context.viewer;
-}
-
 export function useIsAuth() {
   return usePersistentStore<boolean>(IS_AUTH_KEY);
 }
