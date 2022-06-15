@@ -8,7 +8,7 @@ public interface IStorageProvider
 
     public Task<string> SaveFileAsync(IFormFile file, string userId, string? cloudFolderId);
 
-    public Task<string> SaveSystemFileAsync(IFormFile file, string userId);
+    public Task<string> SaveSystemFileAsync(Stream stream, string name, string contentType, string userId);
 
     public Stream GetFileStream(string id);
 

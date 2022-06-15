@@ -7,13 +7,16 @@ import { setUnauthorized } from './model';
 export type ViewerProviderProps = PropsWithChildren<{}>;
 
 export const ViewerProvider: FC<ViewerProviderProps> = ({ children }) => {
-  const { data, error, isLoading, isError, isIdle } = useViewerQuery();
+  const { data, error, isLoading, isError, isIdle, refetch } = useViewerQuery();
 
   const value: ViewerContextValue = {
     viewer: isIdle || !data ? null : data,
     error,
     isLoading,
     isError,
+    refetch: async () => {
+      await refetch();
+    },
   };
 
   useEffect(() => {

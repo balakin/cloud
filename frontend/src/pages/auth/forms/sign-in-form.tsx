@@ -13,7 +13,7 @@ export const SignInForm: FC = () => {
     if (redirectUrl && redirectUrl.startsWith('/')) {
       navigate(redirectUrl, { replace: true });
     } else {
-      navigate('/account', { replace: true });
+      navigate('/', { replace: true });
     }
   };
 

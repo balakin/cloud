@@ -1,1 +1,1 @@
-export * from './change-password-icon-button';
+export * from './change-password-button';

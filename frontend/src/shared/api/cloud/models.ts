@@ -1,6 +1,7 @@
 export type User = {
   id: string;
   userName: string;
+  avatarId: string;
 };
 
 export type SignUpDto = {
@@ -16,6 +17,10 @@ export type SignInDto = {
 export type ChangePasswordDto = {
   currentPassword: string;
   newPassword: string;
+};
+
+export type ChangeAvatarDto = {
+  file: File;
 };
 
 export type ProblemDetails = {

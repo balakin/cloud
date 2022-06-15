@@ -13,7 +13,7 @@ export function useAction(action: () => Promise<void> | void) {
   const memoizedAction = useCallback(async () => {
     setPending(true);
     try {
-      actionRef.current();
+      await actionRef.current();
     } catch (error) {
       // TODO: catch error
       console.error(error);

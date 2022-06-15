@@ -2,7 +2,7 @@ namespace CloudApi.Storage;
 
 public interface ICloudFileProvider
 {
-    public Task<string> SaveFileAsync(IFormFile file);
+    public Task<string> SaveFileAsync(Stream stream);
 
     public Stream GetFileStream(string id);
 

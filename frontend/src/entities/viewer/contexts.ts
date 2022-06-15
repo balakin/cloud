@@ -6,6 +6,7 @@ export type ViewerContextValue = {
   error: unknown;
   isLoading: boolean;
   isError: boolean;
+  refetch: () => Promise<void>;
 };
 
 export const ViewerContext = createContext<ViewerContextValue | null>(null);

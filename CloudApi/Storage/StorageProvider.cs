@@ -38,7 +38,8 @@ public class StorageProvider : IStorageProvider
 
     public async Task<string> SaveFileAsync(IFormFile file, string userId, string? cloudFolderId)
     {
-        string id = await _cloudFileProvider.SaveFileAsync(file);
+        using Stream stream = file.OpenReadStream();
+        string id = await _cloudFileProvider.SaveFileAsync(stream);
         var fileInfo = new CloudFileInfo()
         {
             Id = id,
@@ -54,16 +55,16 @@ public class StorageProvider : IStorageProvider
         return id;
     }
 
-    public async Task<string> SaveSystemFileAsync(IFormFile file, string userId)
+    public async Task<string> SaveSystemFileAsync(Stream stream, string name, string contentType, string userId)
     {
-        string id = await _cloudFileProvider.SaveFileAsync(file);
+        string id = await _cloudFileProvider.SaveFileAsync(stream);
         var fileInfo = new CloudFileInfo()
         {
             Id = id,
-            Name = file.FileName,
+            Name = name,
             UserId = userId,
-            Size = file.Length,
-            ContentType = file.ContentType,
+            Size = stream.Length,
+            ContentType = contentType,
             IsSystemFile = true,
         };
 

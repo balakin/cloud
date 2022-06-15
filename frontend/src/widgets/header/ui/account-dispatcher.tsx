@@ -74,12 +74,7 @@ const Authorized: FC = () => {
           <nav>
             <List>
               <ListItem disablePadding>
-                <ListItemButton component={Link} to={routes.account}>
-                  <ListItemText primary="Account" />
-                </ListItemButton>
-              </ListItem>
-              <ListItem disablePadding>
-                <ListItemButton component={Link} to={routes.settings}>
+                <ListItemButton component={Link} to={routes.settings} onClick={handleClose}>
                   <ListItemText primary="Settings" />
                 </ListItemButton>
               </ListItem>

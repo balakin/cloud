@@ -24,11 +24,10 @@ public class CloudFileProvider : ICloudFileProvider
         File.Delete(path);
     }
 
-    public async Task<string> SaveFileAsync(IFormFile file)
+    public async Task<string> SaveFileAsync(Stream stream)
     {
         string id = Guid.NewGuid().ToString();
         string path = GetFilePath(id);
-        using Stream stream = file.OpenReadStream();
         using FileStream fileStream = File.OpenWrite(path);
         await stream.CopyToAsync(fileStream);
         return id;

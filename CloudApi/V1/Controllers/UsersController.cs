@@ -1,9 +1,14 @@
+using CloudApi.Helpers;
 using CloudApi.Models;
+using CloudApi.Options;
 using CloudApi.Storage;
 using CloudApi.V1.Dto;
+using ImageMagick;
+using ImageMagick.ImageOptimizers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Options;
 
 namespace CloudApi.V1.Controllers;
 
@@ -17,10 +22,16 @@ public class UsersController : ControllerBase
 
     private readonly IStorageProvider _storageProvider;
 
-    public UsersController(UserManager<CloudUser> userManager, IStorageProvider storageProvider)
+    private readonly CloudUserOptions _userOptions;
+
+    public UsersController(
+        UserManager<CloudUser> userManager,
+        IStorageProvider storageProvider,
+        IOptions<CloudUserOptions> userOptionsAccessor)
     {
         _userManager = userManager;
         _storageProvider = storageProvider;
+        _userOptions = userOptionsAccessor.Value;
     }
 
     /// <summary>
@@ -50,7 +61,7 @@ public class UsersController : ControllerBase
     /// </summary>
     /// <param name="changeAvatarDto">New avatar.</param>
     /// <returns>No content.</returns>
-    /// <response code="200">Avatar changed.</response>
+    /// <response code="204">Avatar changed.</response>
     /// <response code="400">Invalid new avatar.</response>
     /// <response code="401">The user unauthorized.</response>
     [HttpPut("@me/avatar")]
@@ -61,14 +72,46 @@ public class UsersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     public async Task<IActionResult> ChangeAvatar([FromForm] ChangeAvatarDto changeAvatarDto)
     {
+        IFormFile file = changeAvatarDto.File;
+        if (file.Length > _userOptions.Avatar.MaxSize)
+        {
+            ModelState.AddModelError(
+                nameof(changeAvatarDto.File),
+                $"Maximum file size exceeded ({BytesConverter.ConvertToString(_userOptions.Avatar.MaxSize)})");
+            return ValidationProblem(ModelState);
+        }
+
+        if (file.Length > int.MaxValue)
+        {
+            ModelState.AddModelError(
+                nameof(changeAvatarDto.File),
+                $"Maximum file size exceeded ({BytesConverter.ConvertToString(int.MaxValue)})");
+            return ValidationProblem(ModelState);
+        }
+
         CloudUser user = await _userManager.GetUserAsync(User);
         if (user.AvatarId != null)
         {
             await _storageProvider.DeleteFileAsync(user.AvatarId);
+            user.AvatarId = null;
+            await _userManager.UpdateAsync(user);
         }
 
-        string avatarId = await _storageProvider.SaveSystemFileAsync(changeAvatarDto.File, user.Id);
+        using MemoryStream memoryStream = new MemoryStream((int)file.Length);
+        using (Stream fileStream = file.OpenReadStream())
+        {
+            await fileStream.CopyToAsync(memoryStream);
+            memoryStream.Position = 0;
+        }
 
+        var imageOptimizer = new ImageOptimizer()
+        {
+            OptimalCompression = true
+        };
+        imageOptimizer.Compress(memoryStream);
+        memoryStream.Position = 0;
+
+        string avatarId = await _storageProvider.SaveSystemFileAsync(memoryStream, file.FileName, file.ContentType, user.Id);
         user.AvatarId = avatarId;
         await _userManager.UpdateAsync(user);
 

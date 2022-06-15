@@ -14,7 +14,10 @@ public static partial class CloudServiceCollectionExtensions
 
         services.AddOptions<StorageOptions>()
             .Bind(configuration.GetSection(StorageOptions.SectionName))
-            .ValidateDataAnnotations();
+            .ValidateDataAnnotations()
+            .ValidateOnStart();
+
+        services.Configure<CloudUserOptions>(configuration.GetSection(CloudUserOptions.SectionName));
 
         return services;
     }
