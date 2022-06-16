@@ -1,6 +1,5 @@
-import { FC, PropsWithChildren, useContext } from 'react';
+import { FC, PropsWithChildren } from 'react';
 import { Navigate } from 'react-router-dom';
-import { ViewerContext } from './contexts';
 import { useIsAuth } from './hooks';
 
 export type AuthRole = 'anonymous' | 'user';
@@ -10,17 +9,11 @@ export type AuthGuardProps = PropsWithChildren<{
 }>;
 
 export const AuthGuard: FC<AuthGuardProps> = ({ children, role }) => {
-  const context = useContext(ViewerContext);
   const viewerRole = useRole();
   const redirectUrl = useRedirectForRole(viewerRole);
 
   if (viewerRole === role) {
-    if (role !== 'user' || (role === 'user' && context?.viewer)) {
-      return <>{children}</>;
-    } else {
-      // the user is loading or a fetch error has occurred
-      return null;
-    }
+    return <>{children}</>;
   }
 
   return redirectUrl ? (

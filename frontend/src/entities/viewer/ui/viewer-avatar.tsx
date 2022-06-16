@@ -1,10 +1,13 @@
-import { alpha, Avatar, styled } from '@mui/material';
+import { alpha, Avatar, Skeleton, styled } from '@mui/material';
 import { grey } from '@mui/material/colors';
 import { forwardRef, MouseEventHandler } from 'react';
 import { cloudApi } from 'shared/api';
 import { useViewer } from '../hooks';
 
-const ClickableAvatar = styled(Avatar)({
+const DEFAULT_WIDTH = 36;
+const DEFAULT_HEIGHT = 36;
+
+const ClickableAvatar = styled(Avatar)(({ theme }) => ({
   position: 'relative',
   overflow: 'hidden',
 
@@ -20,8 +23,9 @@ const ClickableAvatar = styled(Avatar)({
     cursor: 'pointer',
 
     '&:after': {
+      ...theme.typography.body2,
       content: 'attr(data-text)',
-      fontSize: '0.7em',
+      fontSize: '0.8em',
       textAlign: 'center',
       display: 'flex',
       alignItems: 'center',
@@ -33,7 +37,39 @@ const ClickableAvatar = styled(Avatar)({
       color: 'white',
     },
   },
-});
+}));
+
+const ClickableSkeleton = styled(Skeleton)(({ theme }) => ({
+  position: 'relative',
+  overflow: 'hidden',
+
+  '&:after': {
+    content: '""',
+    position: 'absolute',
+    width: '100%',
+    height: '100%',
+    background: '#00000000',
+  },
+
+  '&:hover': {
+    cursor: 'pointer',
+
+    '&:after': {
+      ...theme.typography.body2,
+      content: 'attr(data-text)',
+      fontSize: '0.8em',
+      textAlign: 'center',
+      display: 'flex',
+      alignItems: 'center',
+      justifyContent: 'center',
+      position: 'absolute',
+      width: '100%',
+      height: '100%',
+      background: alpha(grey[700], 0.6),
+      color: 'white',
+    },
+  },
+}));
 
 export type ViewerAvatarProps = {
   onClick?: MouseEventHandler<HTMLDivElement>;
@@ -46,7 +82,19 @@ export const ViewerAvatar = forwardRef<HTMLDivElement, ViewerAvatarProps>(({ onC
   const viewer = useViewer();
 
   if (!viewer) {
-    return null;
+    if (onClick || text) {
+      return (
+        <ClickableSkeleton
+          variant="circular"
+          width={width ?? DEFAULT_WIDTH}
+          height={height ?? DEFAULT_HEIGHT}
+          onClick={onClick}
+          data-text={text}
+        />
+      );
+    }
+
+    return <Skeleton variant="circular" width={width ?? DEFAULT_WIDTH} height={height ?? DEFAULT_HEIGHT} />;
   }
 
   const avatarUrl = viewer.avatarId ? cloudApi.files.getFileUrl(viewer.avatarId) : undefined;
@@ -75,8 +123,8 @@ export const ViewerAvatar = forwardRef<HTMLDivElement, ViewerAvatarProps>(({ onC
 function imageAvatar(width?: number, height?: number) {
   return {
     sx: {
-      width: width ?? 36,
-      height: height ?? 36,
+      width: width ?? DEFAULT_WIDTH,
+      height: height ?? DEFAULT_HEIGHT,
     },
   };
 }
@@ -85,8 +133,8 @@ function stringAvatar(name: string, width?: number, height?: number) {
   return {
     sx: {
       bgcolor: 'primary.main',
-      width: width ?? 36,
-      height: height ?? 36,
+      width: width ?? DEFAULT_WIDTH,
+      height: height ?? DEFAULT_HEIGHT,
     },
     children: `${name[0].toUpperCase()}`,
   };
