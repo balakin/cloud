@@ -125,6 +125,7 @@ function imageAvatar(width?: number, height?: number) {
     sx: {
       width: width ?? DEFAULT_WIDTH,
       height: height ?? DEFAULT_HEIGHT,
+      bgcolor: grey[200],
     },
   };
 }
