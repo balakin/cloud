@@ -10,6 +10,7 @@ export function Routing() {
       usedRoutes={{
         signIn: '/sign-in',
         signUp: '/sign-up',
+        storage: '/',
       }}
     />
   );
