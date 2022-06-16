@@ -1,20 +1,21 @@
 import { Stack, Typography } from '@mui/material';
-import { Form, FormikProvider } from 'formik';
+import { Form, FormikProvider, useFormik } from 'formik';
 import { FC } from 'react';
 import { SignInDto } from 'shared/api';
-import { useCloudFormik } from 'shared/formik';
-import { nameof } from 'shared/helpers';
+import { useAction } from 'shared/hooks';
+import { nameof } from 'shared/lib';
 import { FormError, FormPasswordField, FormStack, FormSubmitButton, FormTextField } from 'shared/ui/form';
 import { Logo } from 'shared/ui/logo';
 import * as Yup from 'yup';
-import { signIn } from './model';
+import { signInAction } from './model';
 
 export type AuthByPasswordFormProps = {
   onSuccess: () => void;
 };
 
 export const AuthByPasswordForm: FC<AuthByPasswordFormProps> = ({ onSuccess }) => {
-  const { error, formik } = useCloudFormik<SignInDto>({
+  const signIn = useAction(signInAction);
+  const formik = useFormik<SignInDto>({
     initialValues: {
       userName: '',
       password: '',
@@ -23,9 +24,13 @@ export const AuthByPasswordForm: FC<AuthByPasswordFormProps> = ({ onSuccess }) =
       userName: Yup.string().required('Required field'),
       password: Yup.string().required('Required field'),
     }),
-    onSubmit: async (dto) => {
-      await signIn(dto);
-      onSuccess && onSuccess();
+    onSubmit: async (values, { setErrors }) => {
+      const result = await signIn.execute(values);
+      if (result.isSuccess) {
+        onSuccess && onSuccess();
+      } else {
+        setErrors(result.errorPayload.fields);
+      }
     },
   });
 
@@ -39,7 +44,7 @@ export const AuthByPasswordForm: FC<AuthByPasswordFormProps> = ({ onSuccess }) =
               Sign In
             </Typography>
           </Stack>
-          <FormError error={error} />
+          <FormError error={signIn?.errorPayload?.message ?? null} />
           <FormTextField name={nameof<SignInDto>('userName')} label="Username" />
           <FormPasswordField name={nameof<SignInDto>('password')} label="Password" />
           <FormSubmitButton>Sign In</FormSubmitButton>

@@ -1,7 +1,6 @@
-import axios, { AxiosError } from 'axios';
+import axios from 'axios';
 import { CLOUD_API_XSRF_COOKIE_NAME, CLOUD_API_XSRF_HEADER_NAME } from 'shared/config';
-import { cookieExists } from 'shared/lib/cookie-exists';
-import { ProblemDetails } from './models';
+import { cookieExists } from 'shared/lib';
 
 export const api = axios.create({
   withCredentials: true,
@@ -36,17 +35,4 @@ api.interceptors.response.use(undefined, async (error) => {
 
 async function requestAntiforgeryToken(): Promise<void> {
   await axios.get('/api/v1/antiforgery');
-}
-
-export function extractProblemDetails(axiosError: AxiosError) {
-  if (!axiosError.response) {
-    throw new Error('Unable to extract problem details');
-  }
-
-  const data = axiosError.response.data as ProblemDetails;
-  if (!data.type) {
-    throw new Error('Unable to extract problem details');
-  }
-
-  return data;
 }

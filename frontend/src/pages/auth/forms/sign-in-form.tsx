@@ -2,7 +2,7 @@ import { Button, Stack } from '@mui/material';
 import { AuthByPasswordForm } from 'features/auth-by-password';
 import { FC } from 'react';
 import { Link, useNavigate, useParams, useSearchParams } from 'react-router-dom';
-import { url } from 'shared/helpers';
+import { url } from 'shared/lib';
 
 export const SignInForm: FC = () => {
   const navigate = useNavigate();

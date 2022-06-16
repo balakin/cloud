@@ -18,7 +18,17 @@
           },
           {
             "message": "Please use top level import.",
-            "group": ["app/*", "pages/*", "widgets/*/*", "features/*/*", "entities/*/*", "shared/*/*/*"]
+            "group": [
+              "app/*",
+              "pages/*",
+              "widgets/*/*",
+              "features/*/*",
+              "entities/*/*",
+              "shared/*/*/*",
+              "shared/helpers/*",
+              "shared/lib/*",
+              "shared/types/*"
+            ]
           }
         ]
       }

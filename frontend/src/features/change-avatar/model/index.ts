@@ -1,2 +1,2 @@
-export * from './change-avatar';
-export * from './delete-avatar';
+export * from './change-avatar-action';
+export * from './delete-avatar-action';

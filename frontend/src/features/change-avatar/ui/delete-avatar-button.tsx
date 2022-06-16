@@ -1,25 +1,32 @@
 import { ButtonProps } from '@mui/material';
 import { useViewerRefetch } from 'entities/viewer';
-import { FC } from 'react';
-import { useAction } from 'shared/hooks';
+import { FC, useEffect } from 'react';
+import { useAction, useSnackbarErrorHandler } from 'shared/hooks';
 import { LoadingButton } from 'shared/ui/buttons';
-import { deleteAvatar } from '../model';
+import { deleteAvatarAction } from '../model';
 
 export type DeleteAvatarButtonProps = Omit<ButtonProps, 'onClick'>;
 
 export const DeleteAvatarButton: FC<DeleteAvatarButtonProps> = (props) => {
-  const { action, pending } = useAction(deleteAvatar);
+  const deleteAvatar = useAction(deleteAvatarAction);
   const refetchViewer = useViewerRefetch();
+  const handleError = useSnackbarErrorHandler();
+
+  useEffect(() => {
+    if (deleteAvatar.isError) {
+      handleError(deleteAvatar.errorPayload);
+    }
+  }, [handleError, deleteAvatar.isError, deleteAvatar.errorPayload]);
 
   const handleClick = () => {
     (async () => {
-      await action();
-      await refetchViewer();
+      await deleteAvatar.execute();
+      refetchViewer();
     })();
   };
 
   return (
-    <LoadingButton {...props} loading={pending} onClick={handleClick}>
+    <LoadingButton {...props} loading={deleteAvatar.isPending} onClick={handleClick}>
       Delete
     </LoadingButton>
   );

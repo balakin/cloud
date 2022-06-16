@@ -1,7 +1,21 @@
 import { Area } from 'react-easy-crop';
 import { cloudApi } from 'shared/api';
+import { cloudHelpers } from 'shared/helpers';
+import { Action, FormError } from 'shared/types';
 
-export async function changeAvatar(file: File, croppedAreaPixels: Area) {
+export type ChangeAvatarArg = {
+  file: File;
+  croppedAreaPixels: Area;
+};
+
+export const changeAvatarAction: Action<ChangeAvatarArg, FormError> = {
+  execute: async (arg: ChangeAvatarArg) => {
+    await changeAvatar(arg.file, arg.croppedAreaPixels);
+  },
+  errorPayloadExtractor: cloudHelpers.getFormError,
+};
+
+async function changeAvatar(file: File, croppedAreaPixels: Area) {
   const canvas = document.createElement('canvas');
   const context = canvas.getContext('2d');
   if (context === null) {

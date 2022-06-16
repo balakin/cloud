@@ -1,11 +1,24 @@
-import { Dialog, DialogActions, DialogContent, DialogProps, DialogTitle, Slider, Stack, styled } from '@mui/material';
-import { FC, useEffect, useState } from 'react';
-import Cropper, { Area, Point } from 'react-easy-crop';
 import ImageIcon from '@mui/icons-material/Image';
-import { useAction } from 'shared/hooks';
-import { LoadingButton } from 'shared/ui/buttons';
-import { changeAvatar } from '../model';
+import {
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogProps,
+  DialogTitle,
+  FormHelperText,
+  Slider,
+  Stack,
+  styled,
+} from '@mui/material';
 import { useViewerRefetch } from 'entities/viewer';
+import { FC, MouseEventHandler, useEffect, useState } from 'react';
+import Cropper, { Area, Point } from 'react-easy-crop';
+import { ChangeAvatarDto } from 'shared/api';
+import { useAction } from 'shared/hooks';
+import { nameof } from 'shared/lib';
+import { LoadingButton } from 'shared/ui/buttons';
+import { FormError } from 'shared/ui/form';
+import { changeAvatarAction } from '../model';
 
 const CropperContainer = styled('div')(({ theme }) => ({
   position: 'relative',
@@ -24,13 +37,7 @@ export const ChangeAvatarDialog: FC<ChangeAvatarDialogProps> = ({ onClose, file,
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const refetchViewer = useViewerRefetch();
-  const { action, pending } = useAction(async () => {
-    if (file && croppedAreaPixels) {
-      await changeAvatar(file, croppedAreaPixels);
-      await refetchViewer();
-      onClose && onClose();
-    }
-  });
+  const changeAvatar = useAction(changeAvatarAction);
 
   useEffect(() => {
     if (!file) {
@@ -60,12 +67,27 @@ export const ChangeAvatarDialog: FC<ChangeAvatarDialogProps> = ({ onClose, file,
     setCroppedAreaPixels(croppedAreaPixels);
   };
 
+  const handleClick: MouseEventHandler<HTMLButtonElement> = () => {
+    if (file && croppedAreaPixels) {
+      (async () => {
+        const result = await changeAvatar.execute({ file, croppedAreaPixels });
+        if (result.isSuccess) {
+          refetchViewer();
+          onClose && onClose();
+        }
+      })();
+    }
+  };
+
+  const imageError = changeAvatar?.errorPayload?.fields[nameof<ChangeAvatarDto>('file')];
+
   return (
     <Dialog maxWidth="xs" fullWidth {...props} onClose={handleClose}>
       <DialogTitle>Edit avatar</DialogTitle>
       <DialogContent>
         {avatarSrc && (
           <Stack spacing={2}>
+            <FormError error={changeAvatar?.errorPayload?.message ?? null} />
             <CropperContainer>
               <Cropper
                 showGrid={false}
@@ -83,11 +105,17 @@ export const ChangeAvatarDialog: FC<ChangeAvatarDialogProps> = ({ onClose, file,
               <Slider min={1} max={2} step={0.01} aria-label="zoom" value={zoom} onChange={handleZoomChange} />
               <ImageIcon />
             </Stack>
+            {imageError && <FormHelperText error={true}>{imageError}</FormHelperText>}
           </Stack>
         )}
       </DialogContent>
       <DialogActions>
-        <LoadingButton type="button" loading={pending} onClick={action} disabled={croppedAreaPixels === null}>
+        <LoadingButton
+          type="button"
+          loading={changeAvatar.isPending}
+          onClick={handleClick}
+          disabled={croppedAreaPixels === null}
+        >
           Send
         </LoadingButton>
       </DialogActions>

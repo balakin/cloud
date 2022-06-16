@@ -2,7 +2,7 @@ import { Container, styled } from '@mui/material';
 import { FC } from 'react';
 import { useLocation } from 'react-router-dom';
 import { UnitRoutesProvider } from 'shared/contexts/unit-routes-context';
-import { url } from 'shared/helpers';
+import { url } from 'shared/lib';
 import { Logo } from 'shared/ui/logo';
 import { HEIGHT } from '../constants';
 import { HeaderRoutes } from '../types';

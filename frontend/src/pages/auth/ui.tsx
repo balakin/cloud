@@ -5,7 +5,7 @@ import { Helmet } from 'react-helmet';
 import { useLocation, useParams } from 'react-router-dom';
 import { CSSTransition, SwitchTransition } from 'react-transition-group';
 import { UnitRoutesProvider } from 'shared/contexts/unit-routes-context';
-import { createAnimationClassNames, url } from 'shared/helpers';
+import { createAnimationClassNames, url } from 'shared/lib';
 import classes from './animations.module.css';
 import { SignInForm, SignUpForm } from './forms';
 import { AuthRoutes } from './types';

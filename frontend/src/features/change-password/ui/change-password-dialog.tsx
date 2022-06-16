@@ -1,19 +1,20 @@
 import { Dialog, DialogActions, DialogContent, DialogProps, DialogTitle } from '@mui/material';
-import { Form, FormikProvider } from 'formik';
+import { Form, FormikProvider, useFormik } from 'formik';
 import { FC } from 'react';
 import { ChangePasswordDto, cloudApi } from 'shared/api';
-import { useCloudFormik } from 'shared/formik';
-import { nameof } from 'shared/helpers';
+import { useAction } from 'shared/hooks';
+import { nameof } from 'shared/lib';
 import { FormError, FormPasswordField, FormStack, FormSubmitButton } from 'shared/ui/form';
 import * as Yup from 'yup';
-import { changePassword } from '../model';
+import { changePasswordAction } from '../model';
 
 export type ChangePasswordDialogProps = Omit<DialogProps, 'onClose'> & {
   onClose?: () => void;
 };
 
 export const ChangePasswordDialog: FC<ChangePasswordDialogProps> = ({ onClose, ...props }) => {
-  const { error, formik } = useCloudFormik<ChangePasswordDto>({
+  const changePassword = useAction(changePasswordAction);
+  const formik = useFormik<ChangePasswordDto>({
     initialValues: {
       currentPassword: '',
       newPassword: '',
@@ -22,9 +23,13 @@ export const ChangePasswordDialog: FC<ChangePasswordDialogProps> = ({ onClose, .
       currentPassword: Yup.string().required('Required field'),
       newPassword: cloudApi.validationSchemes.password().required('Required field'),
     }),
-    onSubmit: async (dto) => {
-      await changePassword(dto);
-      onClose && onClose();
+    onSubmit: async (values, { setErrors }) => {
+      const result = await changePassword.execute(values);
+      if (result.isSuccess) {
+        onClose && onClose();
+      } else {
+        setErrors(result.errorPayload.fields);
+      }
     },
   });
 
@@ -39,7 +44,7 @@ export const ChangePasswordDialog: FC<ChangePasswordDialogProps> = ({ onClose, .
         <Form>
           <DialogContent>
             <FormStack>
-              <FormError error={error} />
+              <FormError error={changePassword?.errorPayload?.message ?? null} />
               <FormPasswordField name={nameof<ChangePasswordDto>('currentPassword')} label="Current password" />
               <FormPasswordField name={nameof<ChangePasswordDto>('newPassword')} label="New password" />
             </FormStack>

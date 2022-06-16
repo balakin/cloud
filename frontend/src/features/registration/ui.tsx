@@ -1,22 +1,23 @@
 import { Stack, Typography } from '@mui/material';
-import { Form, FormikProvider } from 'formik';
+import { Form, FormikProvider, useFormik } from 'formik';
 import { FC } from 'react';
 import { cloudApi, SignUpDto } from 'shared/api';
-import { useCloudFormik } from 'shared/formik';
-import { nameof } from 'shared/helpers';
+import { useAction } from 'shared/hooks';
+import { nameof } from 'shared/lib';
 import { FormError, FormPasswordField, FormStack, FormSubmitButton, FormTextField } from 'shared/ui/form';
 import { Logo } from 'shared/ui/logo';
 import * as Yup from 'yup';
-import { signUp } from './model';
+import { signUpAction } from './model';
 
 export type RegistrationFormProps = {
   onSuccess: () => void;
 };
 
-type FormValues = SignUpDto & { repeatPassword: string };
+type Values = SignUpDto & { repeatPassword: string };
 
 export const RegistrationForm: FC<RegistrationFormProps> = ({ onSuccess }) => {
-  const { error, formik } = useCloudFormik<FormValues>({
+  const signUp = useAction(signUpAction);
+  const formik = useFormik<Values>({
     initialValues: {
       userName: '',
       password: '',
@@ -26,12 +27,16 @@ export const RegistrationForm: FC<RegistrationFormProps> = ({ onSuccess }) => {
       userName: Yup.string().required('Required field'),
       password: cloudApi.validationSchemes.password().required('Required field'),
       repeatPassword: Yup.string()
-        .oneOf([Yup.ref(nameof<FormValues>('password'))], "Passwords don't match")
+        .oneOf([Yup.ref(nameof<Values>('password'))], "Passwords don't match")
         .required('Required field'),
     }),
-    onSubmit: async (dto) => {
-      await signUp(dto);
-      onSuccess && onSuccess();
+    onSubmit: async (values, { setErrors }) => {
+      const result = await signUp.execute(values);
+      if (result.isSuccess) {
+        onSuccess && onSuccess();
+      } else {
+        setErrors(result.errorPayload.fields);
+      }
     },
   });
 
@@ -45,10 +50,10 @@ export const RegistrationForm: FC<RegistrationFormProps> = ({ onSuccess }) => {
               Sign Up
             </Typography>
           </Stack>
-          <FormError error={error} />
-          <FormTextField name={nameof<FormValues>('userName')} label="Username" />
-          <FormPasswordField name={nameof<FormValues>('password')} label="Password" />
-          <FormPasswordField name={nameof<FormValues>('repeatPassword')} label="Repeat password" />
+          <FormError error={signUp.errorPayload?.message ?? null} />
+          <FormTextField name={nameof<Values>('userName')} label="Username" />
+          <FormPasswordField name={nameof<Values>('password')} label="Password" />
+          <FormPasswordField name={nameof<Values>('repeatPassword')} label="Repeat password" />
           <FormSubmitButton>Sign Up</FormSubmitButton>
         </FormStack>
       </Form>

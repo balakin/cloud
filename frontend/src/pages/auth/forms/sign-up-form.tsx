@@ -2,7 +2,7 @@ import { Button, Stack } from '@mui/material';
 import { RegistrationForm } from 'features/registration';
 import { FC } from 'react';
 import { Link, useNavigate, useSearchParams } from 'react-router-dom';
-import { url } from 'shared/helpers';
+import { url } from 'shared/lib';
 
 export const SignUpForm: FC = () => {
   const navigate = useNavigate();

@@ -1,4 +1,4 @@
-import { persistentStore } from 'shared/lib/persistent-store';
+import { persistentStore } from 'shared/lib';
 import { IS_AUTH_KEY } from './constants';
 
 export function setAuthorized() {
