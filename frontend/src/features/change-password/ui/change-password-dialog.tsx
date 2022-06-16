@@ -1,9 +1,10 @@
-import { Dialog, DialogActions, DialogContent, DialogProps, DialogTitle } from '@mui/material';
+import { Dialog, DialogActions, DialogContent, DialogProps } from '@mui/material';
 import { Form, FormikProvider, useFormik } from 'formik';
 import { FC } from 'react';
 import { ChangePasswordDto, cloudApi } from 'shared/api';
 import { useAction } from 'shared/hooks';
 import { nameof } from 'shared/lib';
+import { ClosableDialogTitle } from 'shared/ui/dialog';
 import { FormError, FormPasswordField, FormStack, FormSubmitButton } from 'shared/ui/form';
 import * as Yup from 'yup';
 import { changePasswordAction } from '../model';
@@ -39,7 +40,7 @@ export const ChangePasswordDialog: FC<ChangePasswordDialogProps> = ({ onClose, .
 
   return (
     <Dialog maxWidth="xs" fullWidth {...props} onClose={handleClose}>
-      <DialogTitle>Change password</DialogTitle>
+      <ClosableDialogTitle onClose={handleClose}>Change password</ClosableDialogTitle>
       <FormikProvider value={formik}>
         <Form>
           <DialogContent>

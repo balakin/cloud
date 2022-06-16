@@ -4,7 +4,6 @@ import {
   DialogActions,
   DialogContent,
   DialogProps,
-  DialogTitle,
   FormHelperText,
   Slider,
   Stack,
@@ -17,6 +16,7 @@ import { ChangeAvatarDto } from 'shared/api';
 import { useAction } from 'shared/hooks';
 import { nameof } from 'shared/lib';
 import { LoadingButton } from 'shared/ui/buttons';
+import { ClosableDialogTitle } from 'shared/ui/dialog';
 import { FormError } from 'shared/ui/form';
 import { changeAvatarAction } from '../model';
 
@@ -83,7 +83,7 @@ export const ChangeAvatarDialog: FC<ChangeAvatarDialogProps> = ({ onClose, file,
 
   return (
     <Dialog maxWidth="xs" fullWidth {...props} onClose={handleClose}>
-      <DialogTitle>Edit avatar</DialogTitle>
+      <ClosableDialogTitle onClose={handleClose}>Edit avatar</ClosableDialogTitle>
       <DialogContent>
         {avatarSrc && (
           <Stack spacing={2}>
