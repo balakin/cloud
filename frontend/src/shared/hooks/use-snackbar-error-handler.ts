@@ -5,10 +5,8 @@ export function useSnackbarErrorHandler() {
   const { enqueueSnackbar } = useSnackbar();
 
   const handleError = useCallback(
-    (error: string | null) => {
-      if (error) {
-        enqueueSnackbar(error, { variant: 'error' });
-      }
+    (error: string) => {
+      enqueueSnackbar(error, { variant: 'error' });
     },
     [enqueueSnackbar]
   );

@@ -1,8 +1,8 @@
 import { Dialog, DialogActions, DialogContent, DialogProps } from '@mui/material';
 import { Form, FormikProvider, useFormik } from 'formik';
-import { FC } from 'react';
+import { FC, useState } from 'react';
+import { useMutation } from 'react-query';
 import { ChangePasswordDto, cloudApi } from 'shared/api';
-import { useAction } from 'shared/hooks';
 import { nameof } from 'shared/lib';
 import { ClosableDialogTitle } from 'shared/ui/dialog';
 import { FormError, FormPasswordField, FormStack, FormSubmitButton } from 'shared/ui/form';
@@ -14,7 +14,12 @@ export type ChangePasswordDialogProps = Omit<DialogProps, 'onClose'> & {
 };
 
 export const ChangePasswordDialog: FC<ChangePasswordDialogProps> = ({ onClose, ...props }) => {
-  const changePassword = useAction(changePasswordAction);
+  const [error, setError] = useState<string | null>(null);
+  const changePassword = useMutation(changePasswordAction.mutation, {
+    onSuccess: () => {
+      onClose && onClose();
+    },
+  });
   const formik = useFormik<ChangePasswordDto>({
     initialValues: {
       currentPassword: '',
@@ -24,13 +29,18 @@ export const ChangePasswordDialog: FC<ChangePasswordDialogProps> = ({ onClose, .
       currentPassword: Yup.string().required('Required field'),
       newPassword: cloudApi.validationSchemes.password().required('Required field'),
     }),
-    onSubmit: async (values, { setErrors }) => {
-      const result = await changePassword.execute(values);
-      if (result.isSuccess) {
-        onClose && onClose();
-      } else {
-        setErrors(result.errorPayload.fields);
-      }
+    onSubmit: (values, { setErrors, setSubmitting }) => {
+      setError(null);
+      changePassword.mutate(values, {
+        onError: (error) => {
+          const formError = changePasswordAction.errorPayloadExtractor(error);
+          setError(formError.message);
+          setErrors(formError.fields);
+        },
+        onSettled: () => {
+          setSubmitting(false);
+        },
+      });
     },
   });
 
@@ -45,7 +55,7 @@ export const ChangePasswordDialog: FC<ChangePasswordDialogProps> = ({ onClose, .
         <Form>
           <DialogContent>
             <FormStack>
-              <FormError error={changePassword?.errorPayload?.message ?? null} />
+              <FormError error={error} />
               <FormPasswordField name={nameof<ChangePasswordDto>('currentPassword')} label="Current password" />
               <FormPasswordField name={nameof<ChangePasswordDto>('newPassword')} label="New password" />
             </FormStack>

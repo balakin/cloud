@@ -1,9 +1,13 @@
-export type ErrorPayloadExtractor<Payload> = (error: unknown) => Payload;
+import { MutationFunction } from 'react-query';
 
-export type Action<Argument, ErrorPayload> = {
-  execute: (argument: Argument) => Promise<void>;
-  errorPayloadExtractor: ErrorPayloadExtractor<ErrorPayload>;
+export type ErrorPayloadExtractor<TPayload> = (error: unknown) => TPayload;
+
+export type Action<TData, TVaribles, TErrorPayload = string> = {
+  mutation: MutationFunction<TData, TVaribles>;
+  errorPayloadExtractor: ErrorPayloadExtractor<TErrorPayload>;
 };
+
+export type FormAction<TData, TResult> = Action<TData, TResult, FormError>;
 
 export type FormError = {
   message: string | null;

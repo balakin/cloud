@@ -1,10 +1,10 @@
 import { viewerModel } from 'entities/viewer';
 import { cloudApi, SignInDto } from 'shared/api';
 import { cloudHelpers } from 'shared/helpers';
-import { Action, FormError } from 'shared/types';
+import { FormAction } from 'shared/types';
 
-export const signInAction: Action<SignInDto, FormError> = {
-  execute: async (data: SignInDto) => {
+export const signInAction: FormAction<void, SignInDto> = {
+  mutation: async (data) => {
     await cloudApi.auth.signIn(data);
     viewerModel.setAuthorized();
   },

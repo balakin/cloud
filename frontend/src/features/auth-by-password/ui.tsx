@@ -1,8 +1,8 @@
 import { Stack, Typography } from '@mui/material';
 import { Form, FormikProvider, useFormik } from 'formik';
-import { FC } from 'react';
+import { FC, useState } from 'react';
+import { useMutation } from 'react-query';
 import { SignInDto } from 'shared/api';
-import { useAction } from 'shared/hooks';
 import { nameof } from 'shared/lib';
 import { FormError, FormPasswordField, FormStack, FormSubmitButton, FormTextField } from 'shared/ui/form';
 import { Logo } from 'shared/ui/logo';
@@ -14,7 +14,12 @@ export type AuthByPasswordFormProps = {
 };
 
 export const AuthByPasswordForm: FC<AuthByPasswordFormProps> = ({ onSuccess }) => {
-  const signIn = useAction(signInAction);
+  const [error, setError] = useState<string | null>(null);
+  const signIn = useMutation(signInAction.mutation, {
+    onSuccess: () => {
+      onSuccess && onSuccess();
+    },
+  });
   const formik = useFormik<SignInDto>({
     initialValues: {
       userName: '',
@@ -24,13 +29,18 @@ export const AuthByPasswordForm: FC<AuthByPasswordFormProps> = ({ onSuccess }) =
       userName: Yup.string().required('Required field'),
       password: Yup.string().required('Required field'),
     }),
-    onSubmit: async (values, { setErrors }) => {
-      const result = await signIn.execute(values);
-      if (result.isSuccess) {
-        onSuccess && onSuccess();
-      } else {
-        setErrors(result.errorPayload.fields);
-      }
+    onSubmit: (values, { setErrors, setSubmitting }) => {
+      setError(null);
+      signIn.mutate(values, {
+        onError: (error) => {
+          const formError = signInAction.errorPayloadExtractor(error);
+          setErrors(formError.fields);
+          setError(formError.message);
+        },
+        onSettled: () => {
+          setSubmitting(false);
+        },
+      });
     },
   });
 
@@ -44,7 +54,7 @@ export const AuthByPasswordForm: FC<AuthByPasswordFormProps> = ({ onSuccess }) =
               Sign In
             </Typography>
           </Stack>
-          <FormError error={signIn?.errorPayload?.message ?? null} />
+          <FormError error={error} />
           <FormTextField name={nameof<SignInDto>('userName')} label="Username" />
           <FormPasswordField name={nameof<SignInDto>('password')} label="Password" />
           <FormSubmitButton>Sign In</FormSubmitButton>

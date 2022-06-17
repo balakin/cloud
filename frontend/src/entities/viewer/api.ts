@@ -1,8 +1,7 @@
 import { useQuery } from 'react-query';
 import { cloudApi } from 'shared/api';
+import { VIEWER_QUERY_KEY } from './constants';
 import { useIsAuth } from './hooks';
-
-export const VIEWER_QUERY_KEY = 'viewer';
 
 export function useViewerQuery() {
   const isAuth = useIsAuth();

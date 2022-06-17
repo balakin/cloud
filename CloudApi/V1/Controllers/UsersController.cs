@@ -60,17 +60,17 @@ public class UsersController : ControllerBase
     /// Changes user avatar
     /// </summary>
     /// <param name="changeAvatarDto">New avatar</param>
-    /// <returns>No content</returns>
-    /// <response code="204">Avatar changed</response>
+    /// <returns>Returns a user object on success</returns>
+    /// <response code="200">Avatar changed</response>
     /// <response code="400">Invalid new avatar</response>
     /// <response code="401">The user unauthorized</response>
-    [HttpPut("@me/avatar")]
+    [HttpPatch("@me/avatar")]
     [Consumes("multipart/form-data")]
     [Produces("application/json")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
-    public async Task<IActionResult> ChangeAvatar([FromForm] ChangeAvatarDto changeAvatarDto)
+    public async Task<ActionResult<UserDto>> ChangeAvatar([FromForm] ChangeAvatarDto changeAvatarDto)
     {
         IFormFile file = changeAvatarDto.File;
         if (file.Length > _userOptions.Avatar.MaxSize)
@@ -115,23 +115,23 @@ public class UsersController : ControllerBase
         user.AvatarId = avatarId;
         await _userManager.UpdateAsync(user);
 
-        return NoContent();
+        return UserDto.FromModel(user);
     }
 
     /// <summary>
     /// Deletes user avatar
     /// </summary>
-    /// <returns>No content</returns>
-    /// <response code="204">User avatar was successfully deleted</response>
+    /// <returns>Returns a user object on success</returns>
+    /// <response code="200">User avatar was successfully deleted</response>
     /// <response code="401">The user unauthorized</response>
     /// <response code="404">The session wasn't found</response>
     [HttpDelete("@me/avatar")]
     [Consumes("application/json")]
     [Produces("application/json")]
-    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public async Task<IActionResult> DeleteAvatar()
+    public async Task<ActionResult<UserDto>> DeleteAvatar()
     {
         CloudUser user = await _userManager.GetUserAsync(User);
         if (user.AvatarId == null)
@@ -144,6 +144,6 @@ public class UsersController : ControllerBase
         user.AvatarId = null;
         await _userManager.UpdateAsync(user);
 
-        return NoContent();
+        return UserDto.FromModel(user);
     }
 }

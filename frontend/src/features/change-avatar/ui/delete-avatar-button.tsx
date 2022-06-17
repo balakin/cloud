@@ -1,7 +1,8 @@
 import { ButtonProps, Typography } from '@mui/material';
-import { useViewerRefetch } from 'entities/viewer';
-import { FC, useEffect, useState } from 'react';
-import { useAction, useSnackbarErrorHandler } from 'shared/hooks';
+import { VIEWER_QUERY_KEY } from 'entities/viewer';
+import { FC, useState } from 'react';
+import { useMutation, useQueryClient } from 'react-query';
+import { useSnackbarErrorHandler } from 'shared/hooks';
 import { LoadingButton } from 'shared/ui/buttons';
 import { Confirmation } from 'shared/ui/confirmation';
 import { deleteAvatarAction } from '../model';
@@ -9,16 +10,18 @@ import { deleteAvatarAction } from '../model';
 export type DeleteAvatarButtonProps = Omit<ButtonProps, 'onClick'>;
 
 export const DeleteAvatarButton: FC<DeleteAvatarButtonProps> = (props) => {
-  const deleteAvatar = useAction(deleteAvatarAction);
-  const refetchViewer = useViewerRefetch();
-  const handleError = useSnackbarErrorHandler();
   const [confirmationOpen, setConfirmationOpen] = useState(false);
-
-  useEffect(() => {
-    if (deleteAvatar.isError) {
-      handleError(deleteAvatar.errorPayload);
-    }
-  }, [handleError, deleteAvatar.isError, deleteAvatar.errorPayload]);
+  const handleError = useSnackbarErrorHandler();
+  const queryClient = useQueryClient();
+  const deleteAvatar = useMutation(deleteAvatarAction.mutation, {
+    onSuccess: (user) => {
+      queryClient.setQueryData(VIEWER_QUERY_KEY, user);
+    },
+    onError: (error) => {
+      const message = deleteAvatarAction.errorPayloadExtractor(error);
+      handleError(message);
+    },
+  });
 
   const handleClick = () => {
     setConfirmationOpen(true);
@@ -26,10 +29,7 @@ export const DeleteAvatarButton: FC<DeleteAvatarButtonProps> = (props) => {
 
   const handleYes = () => {
     setConfirmationOpen(false);
-    (async () => {
-      await deleteAvatar.execute();
-      refetchViewer();
-    })();
+    deleteAvatar.mutate();
   };
 
   const handleNo = () => {
@@ -38,7 +38,7 @@ export const DeleteAvatarButton: FC<DeleteAvatarButtonProps> = (props) => {
 
   return (
     <>
-      <LoadingButton {...props} loading={deleteAvatar.isPending} onClick={handleClick}>
+      <LoadingButton {...props} loading={deleteAvatar.isLoading} onClick={handleClick}>
         Delete
       </LoadingButton>
       <Confirmation title="Delete" open={confirmationOpen} onYes={handleYes} onNo={handleNo}>

@@ -9,11 +9,11 @@ import {
   Stack,
   styled,
 } from '@mui/material';
-import { useViewerRefetch } from 'entities/viewer';
+import { VIEWER_QUERY_KEY } from 'entities/viewer';
 import { FC, MouseEventHandler, useEffect, useState } from 'react';
 import Cropper, { Area, Point } from 'react-easy-crop';
+import { useMutation, useQueryClient } from 'react-query';
 import { ChangeAvatarDto } from 'shared/api';
-import { useAction } from 'shared/hooks';
 import { nameof } from 'shared/lib';
 import { LoadingButton } from 'shared/ui/buttons';
 import { ClosableDialogTitle } from 'shared/ui/dialog';
@@ -36,8 +36,20 @@ export const ChangeAvatarDialog: FC<ChangeAvatarDialogProps> = ({ onClose, file,
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>();
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
-  const refetchViewer = useViewerRefetch();
-  const changeAvatar = useAction(changeAvatarAction);
+  const [error, setError] = useState<string | null>(null);
+  const [imageError, setImageError] = useState<string | null>(null);
+  const queryClient = useQueryClient();
+  const changeAvatar = useMutation(changeAvatarAction.mutation, {
+    onSuccess: (user) => {
+      queryClient.setQueryData(VIEWER_QUERY_KEY, user);
+      onClose && onClose();
+    },
+    onError: (error) => {
+      const formError = changeAvatarAction.errorPayloadExtractor(error);
+      setError(formError.message);
+      setImageError(formError.fields[nameof<ChangeAvatarDto>('file')]);
+    },
+  });
 
   useEffect(() => {
     if (!file) {
@@ -69,17 +81,9 @@ export const ChangeAvatarDialog: FC<ChangeAvatarDialogProps> = ({ onClose, file,
 
   const handleClick: MouseEventHandler<HTMLButtonElement> = () => {
     if (file && croppedAreaPixels) {
-      (async () => {
-        const result = await changeAvatar.execute({ file, croppedAreaPixels });
-        if (result.isSuccess) {
-          refetchViewer();
-          onClose && onClose();
-        }
-      })();
+      changeAvatar.mutate({ file, croppedAreaPixels });
     }
   };
-
-  const imageError = changeAvatar?.errorPayload?.fields[nameof<ChangeAvatarDto>('file')];
 
   return (
     <Dialog maxWidth="xs" fullWidth {...props} onClose={handleClose}>
@@ -87,7 +91,7 @@ export const ChangeAvatarDialog: FC<ChangeAvatarDialogProps> = ({ onClose, file,
       <DialogContent>
         {avatarSrc && (
           <Stack spacing={2}>
-            <FormError error={changeAvatar?.errorPayload?.message ?? null} />
+            <FormError error={error} />
             <CropperContainer>
               <Cropper
                 showGrid={false}
@@ -112,7 +116,7 @@ export const ChangeAvatarDialog: FC<ChangeAvatarDialogProps> = ({ onClose, file,
       <DialogActions>
         <LoadingButton
           type="button"
-          loading={changeAvatar.isPending}
+          loading={changeAvatar.isLoading}
           onClick={handleClick}
           disabled={croppedAreaPixels === null}
         >
