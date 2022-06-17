@@ -10,10 +10,11 @@ import {
   styled,
 } from '@mui/material';
 import { VIEWER_QUERY_KEY } from 'entities/viewer';
-import { FC, MouseEventHandler, useEffect, useState } from 'react';
+import { FC, MouseEventHandler, useState } from 'react';
 import Cropper, { Area, Point } from 'react-easy-crop';
 import { useMutation, useQueryClient } from 'react-query';
 import { ChangeAvatarDto } from 'shared/api';
+import { useObjectUrl } from 'shared/hooks';
 import { nameof } from 'shared/lib';
 import { LoadingButton } from 'shared/ui/buttons';
 import { ClosableDialogTitle } from 'shared/ui/dialog';
@@ -32,12 +33,12 @@ export type ChangeAvatarDialogProps = Omit<DialogProps, 'onClose'> & {
 };
 
 export const ChangeAvatarDialog: FC<ChangeAvatarDialogProps> = ({ onClose, file, ...props }) => {
-  const [avatarSrc, setAvatarSrc] = useState<string | null>(null);
   const [croppedAreaPixels, setCroppedAreaPixels] = useState<Area | null>();
   const [crop, setCrop] = useState<Point>({ x: 0, y: 0 });
   const [zoom, setZoom] = useState(1);
   const [error, setError] = useState<string | null>(null);
   const [imageError, setImageError] = useState<string | null>(null);
+  const avatarSrc = useObjectUrl(file);
   const queryClient = useQueryClient();
   const changeAvatar = useMutation(changeAvatarAction.mutation, {
     onSuccess: (user) => {
@@ -50,20 +51,6 @@ export const ChangeAvatarDialog: FC<ChangeAvatarDialogProps> = ({ onClose, file,
       setImageError(formError.fields[nameof<ChangeAvatarDto>('file')]);
     },
   });
-
-  useEffect(() => {
-    if (!file) {
-      return;
-    }
-
-    const url = URL.createObjectURL(file);
-    setAvatarSrc(url);
-
-    return () => {
-      URL.revokeObjectURL(url);
-      setAvatarSrc(null);
-    };
-  }, [file]);
 
   const handleClose = () => {
     onClose && onClose();
