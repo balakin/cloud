@@ -6,8 +6,8 @@ public static partial class CloudServiceCollectionExtensions
 {
     public static IServiceCollection AddCloudStorage(this IServiceCollection services)
     {
-        services.AddTransient<ICloudFileProvider, CloudFileProvider>();
-        services.AddScoped<IStorageProvider, StorageProvider>();
+        services.AddTransient<ICloudFilesProvider, CloudFilesProvider>();
+        services.AddScoped<ICloudFoldersProvider, CloudFoldersProvider>();
         return services;
     }
 }

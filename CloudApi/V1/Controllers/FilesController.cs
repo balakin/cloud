@@ -15,29 +15,92 @@ public class FilesController : ControllerBase
 {
     private readonly UserManager<CloudUser> _userManager;
 
-    private readonly IStorageProvider _storageProvider;
+    private readonly ICloudFilesProvider _cloudFilesProvider;
 
-    public FilesController(UserManager<CloudUser> userManager, IStorageProvider storageProvider)
+    private readonly ICloudFoldersProvider _cloudFoldersProvider;
+
+    public FilesController(
+        UserManager<CloudUser> userManager,
+        ICloudFilesProvider cloudFilesProvider,
+        ICloudFoldersProvider cloudFoldersProvider)
     {
         _userManager = userManager;
-        _storageProvider = storageProvider;
+        _cloudFilesProvider = cloudFilesProvider;
+        _cloudFoldersProvider = cloudFoldersProvider;
     }
 
     /// <summary>
-    /// Returns file by id
+    /// Uploads a single file
     /// </summary>
-    /// <returns>File</returns>
-    /// <response code="200">Returns file</response>
+    /// <returns>The file</returns>
+    /// <param name="uploadFileDto">The upload model</param>
+    /// <response code="200">The file was successfully uploaded</response>
+    /// <response code="400">The upload model is invalid</response>
     /// <response code="401">The user unauthorized</response>
-    /// <response code="404">The file not found</response>
+    [HttpPost]
+    [Consumes("multipart/form-data")]
+    [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    public async Task<ActionResult<FileInfoDto>> UploadFile([FromForm] UploadFileDto uploadFileDto)
+    {
+        CloudUser user = await _userManager.GetUserAsync(User);
+        CloudFolder? parentFolder = null;
+        if (uploadFileDto.FolderId != null)
+        {
+            parentFolder = await _cloudFoldersProvider.GetFolderAsync(uploadFileDto.FolderId);
+            if (parentFolder == null || parentFolder.UserId != user.Id)
+            {
+                ModelState.AddModelError("", "Folder not found");
+                return ValidationProblem(ModelState);
+            }
+        }
+
+        IFormFile file = uploadFileDto.File;
+        string[] segments = file.FileName.Split("/", StringSplitOptions.RemoveEmptyEntries);
+
+        CloudFolder? folder = parentFolder == null
+            ? await _cloudFoldersProvider.GetOrCreateFolderByFilePathAsync(
+                file.FileName,
+                user)
+            : await _cloudFoldersProvider.GetOrCreateFolderByFilePathAsync(
+                file.FileName,
+                parentFolder);
+
+        CloudFileInfo fileInfo = null!;
+        string fileName = segments[segments.Length - 1];
+        if (folder == null)
+        {
+            fileInfo = await _cloudFilesProvider.SaveFileAsync(file, fileName, user);
+        }
+        else
+        {
+            fileInfo = await _cloudFilesProvider.SaveFileAsync(file, fileName, folder);
+        }
+
+        return FileInfoDto.FromModel(fileInfo);
+    }
+
+    /// <summary>
+    /// Gets a single file
+    /// </summary>
+    /// <param name="id">The file identifier</param>
+    /// <returns>The file</returns>
+    /// <response code="200">The file was successfully retrieved</response>
+    /// <response code="400">The file identifier is invalid</response>
+    /// <response code="401">The user unauthorized</response>
+    /// <response code="404">The file does not exist</response>
     [HttpGet("{id}")]
     [Consumes("application/json")]
+    [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult GetFile(string id)
+    public async Task<IActionResult> GetFile(string id)
     {
-        CloudFileInfo? fileInfo = _storageProvider.GetFileInfo(id);
+        CloudFileInfo? fileInfo = await _cloudFilesProvider.GetFileInfoAsync(id);
         if (fileInfo == null)
         {
             return NotFound();
@@ -49,26 +112,29 @@ public class FilesController : ControllerBase
             return NotFound();
         }
 
-        Stream stream = _storageProvider.GetFileStream(id);
+        Stream stream = _cloudFilesProvider.GetFileStream(fileInfo);
         return File(stream, fileInfo.ContentType);
     }
 
     /// <summary>
-    /// Returns file info by id
+    /// Gets a single file info
     /// </summary>
-    /// <returns>File info</returns>
-    /// <response code="200">Returns file info</response>
+    /// <param name="id">The file identifier</param>
+    /// <returns>The file info</returns>
+    /// <response code="200">The file info was successfully retrieved</response>
+    /// <response code="400">The file identifier is invalid</response>
     /// <response code="401">The user unauthorized</response>
-    /// <response code="404">The file not found</response>
+    /// <response code="404">The file does not exist</response>
     [HttpGet("{id}/info")]
     [Consumes("application/json")]
     [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public ActionResult<FileInfoDto> GetFileInfo(string id)
+    public async Task<ActionResult<FileInfoDto>> GetFileInfo(string id)
     {
-        CloudFileInfo? fileInfo = _storageProvider.GetFileInfo(id);
+        CloudFileInfo? fileInfo = await _cloudFilesProvider.GetFileInfoAsync(id);
         if (fileInfo == null)
         {
             return NotFound();
@@ -84,20 +150,24 @@ public class FilesController : ControllerBase
     }
 
     /// <summary>
-    /// Download file
+    /// Downloads a single file
     /// </summary>
-    /// <returns>File</returns>
-    /// <response code="200">Returns file</response>
+    /// <param name="id">The file identifier</param>
+    /// <returns>The file</returns>
+    /// <response code="200">The file was successfully retrieved</response>
+    /// <response code="400">The file identifier is invalid</response>
     /// <response code="401">The user unauthorized</response>
-    /// <response code="404">The file not found</response>
+    /// <response code="404">The file does not exist</response>
     [HttpGet("{id}/download")]
     [Consumes("application/json")]
+    [Produces("application/json")]
     [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
     [ProducesResponseType(StatusCodes.Status404NotFound)]
-    public IActionResult DownloadFile(string id)
+    public async Task<IActionResult> DownloadFile(string id)
     {
-        CloudFileInfo? fileInfo = _storageProvider.GetFileInfo(id);
+        CloudFileInfo? fileInfo = await _cloudFilesProvider.GetFileInfoAsync(id);
         if (fileInfo == null)
         {
             return NotFound();
@@ -109,7 +179,67 @@ public class FilesController : ControllerBase
             return NotFound();
         }
 
-        Stream stream = _storageProvider.GetFileStream(id);
+        Stream stream = _cloudFilesProvider.GetFileStream(fileInfo);
         return File(stream, fileInfo.ContentType, fileInfo.Name);
+    }
+
+    /// <summary>
+    /// Changes a single file
+    /// </summary>
+    /// <param name="id">The file identifier</param>
+    /// <param name="changeFileDto">The change model</param>
+    /// <returns>The changed file info</returns>
+    /// <response code="200">The file was successfully changed</response>
+    /// <response code="400">The file identifier or model is invalid</response>
+    /// <response code="401">The user unauthorized</response>
+    /// <response code="404">The file does not exist</response>
+    [HttpPatch("{id}")]
+    [Consumes("application/json")]
+    [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<FileInfoDto>> ChangeFile(string id, ChangeFileDto changeFileDto)
+    {
+        string userId = _userManager.GetUserId(User);
+        CloudFileInfo? fileInfo = await _cloudFilesProvider.GetFileInfoAsync(id);
+        if (fileInfo == null || userId != fileInfo.UserId || fileInfo.IsSystemFile)
+        {
+            return NotFound();
+        }
+
+        fileInfo.Name = changeFileDto.Name;
+        await _cloudFilesProvider.UpdateAsync(fileInfo);
+
+        return FileInfoDto.FromModel(fileInfo);
+    }
+
+    /// <summary>
+    /// Deletes a single file
+    /// </summary>
+    /// <param name="id">The file identifier</param>
+    /// <returns>No content message</returns>
+    /// <response code="204">The file was successfully deleted</response>
+    /// <response code="400">The file identifier is invalid</response>
+    /// <response code="404">The file does not exists</response>
+    [HttpDelete("{id}")]
+    [Consumes("application/json")]
+    [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status204NoContent)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<ActionResult<FileInfoDto>> DeleteFile(string id)
+    {
+        string userId = _userManager.GetUserId(User);
+        CloudFileInfo? fileInfo = await _cloudFilesProvider.GetFileInfoAsync(id);
+        if (fileInfo == null || fileInfo.UserId != userId || fileInfo.IsSystemFile)
+        {
+            return NotFound();
+        }
+
+        await _cloudFilesProvider.DeleteFileAsync(fileInfo);
+        return NoContent();
     }
 }

@@ -3,9 +3,11 @@ using CloudApi.Validation;
 
 namespace CloudApi.V1.Dto;
 
-public class ChangeAvatarDto
+public class UploadFileDto
 {
     [Required(ErrorMessage = "Required field")]
-    [FormFileValidator(ContentType = "image/png, image/jpeg")]
+    [FormFileValidator(AllowFullPath = true)]
     public IFormFile File { get; set; } = null!;
+
+    public string? FolderId { get; set; }
 }

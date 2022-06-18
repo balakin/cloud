@@ -17,7 +17,7 @@ public class CloudFileInfo
     public long Size { get; set; } = 0;
 
     [ForeignKey(nameof(User))]
-    public string UserId { get; set; } = string.Empty;
+    public string UserId { get; set; } = null!;
 
     public CloudUser? User { get; set; }
 

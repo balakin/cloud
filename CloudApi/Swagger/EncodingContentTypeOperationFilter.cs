@@ -21,10 +21,13 @@ public class EncodingContentTypeOperationFilter : IOperationFilter
         foreach (var parameterInfo in fromFormParameters)
         {
             var contentTypeByPropertyName = parameterInfo.ParameterType.GetProperties()
-                .Where((propertyInfo) => propertyInfo.IsDefined(typeof(FileContentTypeAttribute), false))
+                .Where((propertyInfo) =>
+                    propertyInfo.IsDefined(typeof(FormFileValidatorAttribute), false)
+                    && propertyInfo.GetCustomAttribute<FormFileValidatorAttribute>()!.ContentType != null)
                 .ToDictionary(
                     (propertyInfo) => propertyInfo.Name.ToLower(),
-                    (propertyInfo) => propertyInfo.GetCustomAttribute<FileContentTypeAttribute>()!.ContentType);
+                    (propertyInfo) =>
+                        new ContentType(propertyInfo.GetCustomAttribute<FormFileValidatorAttribute>()!.ContentType!));
 
             if (!contentTypeByPropertyName.Any())
             {

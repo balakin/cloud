@@ -4,7 +4,6 @@ using CloudApi.Options;
 using CloudApi.Storage;
 using CloudApi.V1.Dto;
 using ImageMagick;
-using ImageMagick.ImageOptimizers;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.AspNetCore.Mvc;
@@ -20,17 +19,17 @@ public class UsersController : ControllerBase
 {
     private readonly UserManager<CloudUser> _userManager;
 
-    private readonly IStorageProvider _storageProvider;
+    private readonly ICloudFilesProvider _cloudFilesProvider;
 
     private readonly CloudUserOptions _userOptions;
 
     public UsersController(
         UserManager<CloudUser> userManager,
-        IStorageProvider storageProvider,
+        ICloudFilesProvider cloudFilesProvider,
         IOptions<CloudUserOptions> userOptionsAccessor)
     {
         _userManager = userManager;
-        _storageProvider = storageProvider;
+        _cloudFilesProvider = cloudFilesProvider;
         _userOptions = userOptionsAccessor.Value;
     }
 
@@ -92,7 +91,12 @@ public class UsersController : ControllerBase
         CloudUser user = await _userManager.GetUserAsync(User);
         if (user.AvatarId != null)
         {
-            await _storageProvider.DeleteFileAsync(user.AvatarId);
+            CloudFileInfo? foundAvatarInfo = await _cloudFilesProvider.GetFileInfoAsync(user.AvatarId);
+            if (foundAvatarInfo != null)
+            {
+                await _cloudFilesProvider.DeleteFileAsync(foundAvatarInfo);
+            }
+
             user.AvatarId = null;
             await _userManager.UpdateAsync(user);
         }
@@ -111,8 +115,12 @@ public class UsersController : ControllerBase
         imageOptimizer.Compress(memoryStream);
         memoryStream.Position = 0;
 
-        string avatarId = await _storageProvider.SaveSystemFileAsync(memoryStream, file.FileName, file.ContentType, user.Id);
-        user.AvatarId = avatarId;
+        CloudFileInfo avatarInfo = await _cloudFilesProvider.SaveSystemFileAsync(
+            memoryStream,
+            file.FileName,
+            file.ContentType, user);
+
+        user.AvatarId = avatarInfo.Id;
         await _userManager.UpdateAsync(user);
 
         return UserDto.FromModel(user);
@@ -139,7 +147,11 @@ public class UsersController : ControllerBase
             return NotFound();
         }
 
-        await _storageProvider.DeleteFileAsync(user.AvatarId);
+        CloudFileInfo? avatarInfo = await _cloudFilesProvider.GetFileInfoAsync(user.AvatarId);
+        if (avatarInfo != null)
+        {
+            await _cloudFilesProvider.DeleteFileAsync(avatarInfo);
+        }
 
         user.AvatarId = null;
         await _userManager.UpdateAsync(user);

@@ -12,12 +12,12 @@ public class CloudFolder
     public string Name { get; set; } = string.Empty;
 
     [ForeignKey(nameof(User))]
-    public string UserId { get; set; } = string.Empty;
+    public string UserId { get; set; } = null!;
 
     public CloudUser? User { get; set; }
 
     [ForeignKey(nameof(Parent))]
-    public string? ParentId { get; set; } = string.Empty;
+    public string? ParentId { get; set; } = null!;
 
     public CloudFolder? Parent { get; set; }
 
