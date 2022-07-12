@@ -62,7 +62,7 @@ const files: Array<Pair> = [
   { icon: Eslint, regex: /\.eslintrc(?:\.(?:js|json|ya?ml))?$/i, color: purple[300] },
   { icon: LanguageHtml5, regex: /\.html$/i, color: orange[500] },
   { icon: LanguageJavascript, regex: /\.js$/i, color: yellow[600] },
-  { icon: LanguageTypescript, regex: /\.js$/i, color: blue[500] },
+  { icon: LanguageTypescript, regex: /\.tsx?$/i, color: blue[500] },
   { icon: Webpack, regex: /webpack\.config\.|^webpackfile\.js$/i, color: blue[500] },
   { icon: CodeJson, regex: /\.json$/i, color: yellow[600] },
   { icon: InformationOutline, regex: /\.md$/i, color: blue[300] },
