@@ -1,8 +1,10 @@
 using System.ComponentModel.DataAnnotations;
 using System.ComponentModel.DataAnnotations.Schema;
+using Microsoft.EntityFrameworkCore;
 
 namespace CloudApi.Models;
 
+[Index(nameof(CloudFileInfo.Name), IsUnique = true)]
 public class CloudFileInfo
 {
     [Key]

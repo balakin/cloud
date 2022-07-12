@@ -1,4 +1,3 @@
-using CloudApi.Helpers;
 using CloudApi.Models;
 using CloudApi.Storage;
 using CloudApi.V1.Dto;
@@ -20,14 +19,18 @@ public class FilesController : ControllerBase
 
     private readonly ICloudFoldersProvider _cloudFoldersProvider;
 
+    private readonly IFileNameResolver _fileNameResolver;
+
     public FilesController(
         UserManager<CloudUser> userManager,
         ICloudFilesProvider cloudFilesProvider,
-        ICloudFoldersProvider cloudFoldersProvider)
+        ICloudFoldersProvider cloudFoldersProvider,
+        IFileNameResolver fileNameResolver)
     {
         _userManager = userManager;
         _cloudFilesProvider = cloudFilesProvider;
         _cloudFoldersProvider = cloudFoldersProvider;
+        _fileNameResolver = fileNameResolver;
     }
 
     /// <summary>
@@ -70,16 +73,20 @@ public class FilesController : ControllerBase
                 file.FileName,
                 parentFolder);
 
-        CloudFileInfo fileInfo = null!;
         string fileName = segments[segments.Length - 1];
-        if (folder == null)
+        string? resolvedFileName = folder == null
+            ? await _fileNameResolver.Resolve(fileName, user)
+            : await _fileNameResolver.Resolve(fileName, folder);
+
+        if (resolvedFileName == null)
         {
-            fileInfo = await _cloudFilesProvider.SaveFileAsync(file, fileName, user);
+            ModelState.AddModelError("", "Invalid file name");
+            return ValidationProblem(ModelState);
         }
-        else
-        {
-            fileInfo = await _cloudFilesProvider.SaveFileAsync(file, fileName, folder);
-        }
+
+        CloudFileInfo fileInfo = folder == null
+            ? await _cloudFilesProvider.SaveFileAsync(file, resolvedFileName, user)
+            : await _cloudFilesProvider.SaveFileAsync(file, resolvedFileName, folder);
 
         return FileInfoDto.FromModel(fileInfo);
     }
