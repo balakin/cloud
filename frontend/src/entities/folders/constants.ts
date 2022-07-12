@@ -1,4 +1,4 @@
-export const QUERY_KEY = 'files';
+export const QUERY_KEY = 'folders';
 
 export const CHILDREN_QUERY_KEY = 'children';
 

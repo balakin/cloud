@@ -1,3 +1,4 @@
+export * from './use-debounce';
 export * from './use-is-mounted-ref';
 export * from './use-object-url';
 export * from './use-persistent-store';
