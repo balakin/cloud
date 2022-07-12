@@ -6,6 +6,10 @@ public interface ICloudFilesProvider
 {
     public Task<CloudFileInfo?> GetFileInfoAsync(string id);
 
+    public Task<CloudFileInfo?> GetFileInfoByNameAsync(string name, CloudUser user);
+
+    public Task<CloudFileInfo?> GetFileInfoByNameAsync(string name, CloudFolder cloudFolder);
+
     public Task<CloudFileInfo> SaveFileAsync(IFormFile file, CloudUser user);
 
     public Task<CloudFileInfo> SaveFileAsync(IFormFile file, CloudFolder cloudFolder);

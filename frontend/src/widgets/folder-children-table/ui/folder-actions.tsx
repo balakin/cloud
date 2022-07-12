@@ -1,7 +1,8 @@
-import { IconButton, IconButtonProps, Menu } from '@mui/material';
-import { FC, MouseEventHandler, useState } from 'react';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
+import { IconButton, IconButtonProps, Menu } from '@mui/material';
 import { DeleteFolderMenuItem } from 'features/delete-folder';
+import { RenameFolderMenuItem } from 'features/rename-folder';
+import { FC, MouseEventHandler, useState } from 'react';
 
 export type FolderActionsProps = {
   id: string;
@@ -36,6 +37,7 @@ export const FolderActions: FC<FolderActionsProps> = ({ id, name, ...props }) =>
         MenuListProps={{ dense: true }}
       >
         <DeleteFolderMenuItem id={id} name={name} onDelete={handleClose} />
+        <RenameFolderMenuItem id={id} name={name} onClose={handleClose} />
       </Menu>
     </>
   );

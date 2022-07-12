@@ -50,6 +50,16 @@ public class FoldersController : ControllerBase
             }
         }
 
+        CloudFolder? foundFolder = parentFolder == null
+            ? await _cloudFoldersProvider.GetFolderByNameAsync(createFolderDto.Name, user)
+            : await _cloudFoldersProvider.GetFolderByNameAsync(createFolderDto.Name, parentFolder);
+
+        if (foundFolder != null)
+        {
+            ModelState.AddModelError(nameof(CreateFolderDto.Name), "A folder with the same name already exists");
+            return ValidationProblem(ModelState);
+        }
+
         CloudFolder folder = parentFolder == null
             ? await _cloudFoldersProvider.CreateFolderAsync(createFolderDto.Name, user)
             : await _cloudFoldersProvider.CreateFolderAsync(createFolderDto.Name, parentFolder);
@@ -199,15 +209,39 @@ public class FoldersController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<FolderDto>> ChangeFolder(string id, ChangeFolderDto changeFolderDto)
     {
-        string userId = _userManager.GetUserId(User);
+        CloudUser user = await _userManager.GetUserAsync(User);
         CloudFolder? folder = await _cloudFoldersProvider.GetFolderAsync(id);
-        if (folder == null || folder.UserId != userId)
+        if (folder == null || folder.UserId != user.Id)
         {
             return NotFound();
         }
 
-        folder.Name = changeFolderDto.Name;
-        await _cloudFoldersProvider.UpdateAsync(folder);
+        if (folder.Name != changeFolderDto.Name)
+        {
+            string? parentId = folder.ParentId;
+            CloudFolder? parentFolder = null;
+            if (parentId != null)
+            {
+                parentFolder = await _cloudFoldersProvider.GetFolderAsync(parentId);
+                if (parentFolder == null)
+                {
+                    throw new NullReferenceException(nameof(parentFolder));
+                }
+            }
+
+            CloudFolder? foundFolder = parentFolder == null
+                ? await _cloudFoldersProvider.GetFolderByNameAsync(changeFolderDto.Name, user)
+                : await _cloudFoldersProvider.GetFolderByNameAsync(changeFolderDto.Name, parentFolder);
+
+            if (foundFolder != null)
+            {
+                ModelState.AddModelError(nameof(ChangeFolderDto.Name), "A folder with the same name already exists");
+                return ValidationProblem(ModelState);
+            }
+
+            folder.Name = changeFolderDto.Name;
+            await _cloudFoldersProvider.UpdateAsync(folder);
+        }
 
         return FolderDto.FromModel(folder);
     }

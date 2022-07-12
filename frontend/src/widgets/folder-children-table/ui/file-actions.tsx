@@ -2,6 +2,7 @@ import { IconButton, IconButtonProps, Menu } from '@mui/material';
 import { FC, MouseEventHandler, useState } from 'react';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { DeleteFileMenuItem } from 'features/delete-file';
+import { RenameFileMenuItem } from 'features/rename-file';
 
 export type FileActionsProps = {
   id: string;
@@ -36,6 +37,7 @@ export const FileActions: FC<FileActionsProps> = ({ id, name, ...props }) => {
         MenuListProps={{ dense: true }}
       >
         <DeleteFileMenuItem id={id} name={name} onDelete={handleClose} />
+        <RenameFileMenuItem id={id} name={name} onClose={handleClose} />
       </Menu>
     </>
   );

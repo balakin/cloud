@@ -1,6 +1,7 @@
 using CloudApi.Database;
 using CloudApi.Models;
 using CloudApi.Options;
+using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Options;
 
 namespace CloudApi.Storage;
@@ -20,6 +21,25 @@ public class CloudFilesProvider : ICloudFilesProvider
     public async Task<CloudFileInfo?> GetFileInfoAsync(string id)
     {
         return await _databaseContext.FilesInfo.FindAsync(id);
+    }
+
+    public async Task<CloudFileInfo?> GetFileInfoByNameAsync(string name, CloudUser user)
+    {
+        return await _databaseContext.FilesInfo
+            .FirstOrDefaultAsync((fileInfo) =>
+                !fileInfo.IsSystemFile &&
+                fileInfo.FolderId == null &&
+                fileInfo.UserId == user.Id &&
+                fileInfo.Name == name);
+    }
+
+    public async Task<CloudFileInfo?> GetFileInfoByNameAsync(string name, CloudFolder cloudFolder)
+    {
+        return await _databaseContext.FilesInfo
+            .FirstOrDefaultAsync((fileInfo) =>
+                !fileInfo.IsSystemFile &&
+                fileInfo.FolderId == cloudFolder.Id &&
+                fileInfo.Name == name);
     }
 
     public async Task<CloudFileInfo> SaveFileAsync(IFormFile file, CloudUser user)

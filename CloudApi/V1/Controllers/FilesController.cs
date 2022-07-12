@@ -204,15 +204,39 @@ public class FilesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status404NotFound)]
     public async Task<ActionResult<FileInfoDto>> ChangeFile(string id, ChangeFileDto changeFileDto)
     {
-        string userId = _userManager.GetUserId(User);
+        CloudUser user = await _userManager.GetUserAsync(User);
         CloudFileInfo? fileInfo = await _cloudFilesProvider.GetFileInfoAsync(id);
-        if (fileInfo == null || userId != fileInfo.UserId || fileInfo.IsSystemFile)
+        if (fileInfo == null || user.Id != fileInfo.UserId || fileInfo.IsSystemFile)
         {
             return NotFound();
         }
 
-        fileInfo.Name = changeFileDto.Name;
-        await _cloudFilesProvider.UpdateAsync(fileInfo);
+        if (fileInfo.Name != changeFileDto.Name)
+        {
+            string? folderId = fileInfo.FolderId;
+            CloudFolder? folder = null;
+            if (folderId != null)
+            {
+                folder = await _cloudFoldersProvider.GetFolderAsync(folderId);
+                if (folder == null)
+                {
+                    throw new NullReferenceException(nameof(folder));
+                }
+            }
+
+            CloudFileInfo? foundFileInfo = folder == null
+                ? await _cloudFilesProvider.GetFileInfoByNameAsync(changeFileDto.Name, user)
+                : await _cloudFilesProvider.GetFileInfoByNameAsync(changeFileDto.Name, folder);
+
+            if (foundFileInfo != null)
+            {
+                ModelState.AddModelError(nameof(ChangeFileDto.Name), "A file with the same name already exists");
+                return ValidationProblem(ModelState);
+            }
+
+            fileInfo.Name = changeFileDto.Name;
+            await _cloudFilesProvider.UpdateAsync(fileInfo);
+        }
 
         return FileInfoDto.FromModel(fileInfo);
     }
