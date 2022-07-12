@@ -9,6 +9,10 @@ export const api = axios.create({
 });
 
 api.interceptors.request.use(async (config) => {
+  if (config.signal?.aborted) {
+    return config;
+  }
+
   if (config.xsrfCookieName === undefined) {
     throw new Error('Unable to check antiforgery token');
   }
@@ -21,6 +25,10 @@ api.interceptors.request.use(async (config) => {
 });
 
 api.interceptors.response.use(undefined, async (error) => {
+  if (axios.isCancel(error)) {
+    throw error;
+  }
+
   if (!error.config || !error.config.xsrfCookieName) {
     throw new Error('Unable to check antiforgery token');
   }

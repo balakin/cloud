@@ -3,6 +3,7 @@ import { Header } from 'widgets/header';
 import { AuthPage } from './auth';
 import { Error404Page } from './error404';
 import { SettingsPage } from './settings';
+import { StoragePage } from './storage';
 
 export function Routing() {
   const auth = (
@@ -10,7 +11,7 @@ export function Routing() {
       usedRoutes={{
         signIn: '/sign-in',
         signUp: '/sign-up',
-        storage: '/',
+        storage: '/?id=root',
       }}
     />
   );
@@ -28,13 +29,24 @@ export function Routing() {
                 signIn: '/sign-in',
                 signUp: '/sign-up',
                 settings: '/settings',
+                storage: '/?id=root',
               }}
             />
             <Outlet />
           </>
         }
       >
-        <Route index element={<Navigate to="/404" replace />} />
+        <Route
+          index
+          element={
+            <StoragePage
+              usedRoutes={{
+                folder: (id) => `/?id=${id}`,
+                root: '/?id=root',
+              }}
+            />
+          }
+        />
         <Route path="settings" element={<SettingsPage />} />
         <Route path="404" element={<Error404Page />} />
       </Route>

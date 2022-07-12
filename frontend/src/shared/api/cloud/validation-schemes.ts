@@ -8,3 +8,15 @@ export function password() {
     .matches(/[a-z]+/, "Passwords must have at least one lowercase ('a'-'z')")
     .min(6, 'Passwords must be at least 6 characters');
 }
+
+export function folderName() {
+  return Yup.string()
+    .matches(/^[^\\/:?"<>|]*/, 'The folder name must not contain the following characters: \\ / : ? " < > |')
+    .max(255, 'Max number of characters is 255');
+}
+
+export function fileName() {
+  return Yup.string()
+    .matches(/^[^\\/:?"<>|]*/, 'The file name must not contain the following characters: \\ / : ? " < > |')
+    .max(255, 'Max number of characters is 255');
+}

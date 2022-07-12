@@ -13,3 +13,7 @@ export type FormError = {
   message: string | null;
   fields: Record<string, string>;
 };
+
+export type FolderFile = File & {
+  cloudFullPath: string;
+};

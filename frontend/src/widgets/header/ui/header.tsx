@@ -1,6 +1,6 @@
 import { Container, styled } from '@mui/material';
 import { FC } from 'react';
-import { useLocation } from 'react-router-dom';
+import { Link, useLocation } from 'react-router-dom';
 import { UnitRoutesProvider } from 'shared/contexts/unit-routes-context';
 import { url } from 'shared/lib';
 import { Logo } from 'shared/ui/logo';
@@ -15,6 +15,11 @@ const Root = styled(Container)(({ theme }) => ({
   alignItems: 'center',
   justifyContent: 'space-between',
   flex: `0 0 ${HEIGHT}px`,
+}));
+
+const TextLink = styled(Link)(({ theme }) => ({
+  color: theme.palette.text.primary,
+  textDecoration: 'none',
 }));
 
 export type HeaderProps = {
@@ -36,7 +41,9 @@ export const Header: FC<HeaderProps> = ({ usedRoutes }) => {
   return (
     <Root maxWidth={false}>
       <UnitRoutesProvider routes={unitRoutes}>
-        <Logo />
+        <TextLink to={unitRoutes.storage}>
+          <Logo />
+        </TextLink>
         <AccountDispatcher />
       </UnitRoutesProvider>
     </Root>

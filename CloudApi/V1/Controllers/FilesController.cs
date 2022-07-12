@@ -1,3 +1,4 @@
+using CloudApi.Helpers;
 using CloudApi.Models;
 using CloudApi.Storage;
 using CloudApi.V1.Dto;
@@ -43,6 +44,7 @@ public class FilesController : ControllerBase
     [ProducesResponseType(StatusCodes.Status200OK)]
     [ProducesResponseType(StatusCodes.Status400BadRequest)]
     [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [RequestSizeLimit(int.MaxValue)]
     public async Task<ActionResult<FileInfoDto>> UploadFile([FromForm] UploadFileDto uploadFileDto)
     {
         CloudUser user = await _userManager.GetUserAsync(User);

@@ -10,22 +10,35 @@ const Root = styled(Box, {
   position: 'relative',
   border: dragging ? `1px dashed ${theme.palette.primary.main}` : '1px solid rgba(0, 0, 0, 0)',
   display: 'flex',
+  flexDirection: 'column',
+  width: '100%',
+  height: '100%',
+  overflow: 'hidden',
+  WebkitOverflowScrolling: 'touch',
 }));
 
 export type DragAndDropProps = Omit<BoxProps, 'onDrop'> & {
   onDrop?: DropzoneOptions['onDrop'];
 };
 
-export const DragAndDrop: FC<DragAndDropProps> = ({ onDrop, ...props }) => {
+export const DragAndDrop: FC<DragAndDropProps> = ({ onDrop, children, ...props }) => {
   const onDropRef = useRef<DropzoneOptions['onDrop'] | null>(onDrop ?? null);
   const handleDrop = useCallback<Exclude<DropzoneOptions['onDrop'], undefined>>((...args) => {
     onDropRef.current && onDropRef.current(...args);
   }, []);
-  const { isDragActive, getRootProps } = useDropzone({ onDrop: handleDrop, noDragEventsBubbling: true, noClick: true });
+  const { isDragActive, getRootProps } = useDropzone({
+    onDrop: handleDrop,
+    noDragEventsBubbling: true,
+    noClick: true,
+  });
 
   useEffect(() => {
     onDropRef.current = onDrop;
   }, [onDrop]);
 
-  return <Root {...props} {...getRootProps()} dragging={isDragActive} />;
+  return (
+    <Root {...props} {...getRootProps()} dragging={isDragActive}>
+      {children}
+    </Root>
+  );
 };

@@ -6,7 +6,10 @@ export function useSnackbarErrorHandler() {
 
   const handleError = useCallback(
     (error: string) => {
-      enqueueSnackbar(error, { variant: 'error' });
+      enqueueSnackbar(error, {
+        variant: 'error',
+        style: { whiteSpace: 'pre-line' },
+      });
     },
     [enqueueSnackbar]
   );

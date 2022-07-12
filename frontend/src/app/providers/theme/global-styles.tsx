@@ -24,6 +24,7 @@ export const GlobalStyles: FC = () => {
           height: '100%',
           display: 'flex',
           flexDirection: 'column',
+          overflow: 'hidden',
         },
         'input::-ms-reveal, input::-ms-clear': {
           display: 'none',

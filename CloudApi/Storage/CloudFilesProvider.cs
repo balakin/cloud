@@ -69,23 +69,6 @@ public class CloudFilesProvider : ICloudFilesProvider
         return fileInfo;
     }
 
-    public async Task<CloudFileInfo> SaveSystemFileAsync(Stream stream, string name, string contentType, CloudUser user)
-    {
-        string id = await SaveFileToFileSystemAsync(stream);
-        var fileInfo = new CloudFileInfo()
-        {
-            Id = id,
-            Name = name,
-            User = user,
-            Size = stream.Length,
-            ContentType = contentType,
-            IsSystemFile = true,
-        };
-
-        await SaveFileInfo(fileInfo);
-        return fileInfo;
-    }
-
     public async Task<string> SaveFileToFileSystemAsync(Stream stream)
     {
         string id = Guid.NewGuid().ToString();
@@ -107,6 +90,23 @@ public class CloudFilesProvider : ICloudFilesProvider
             DeleteFileFromFileSystem(fileInfo);
             throw new Exception("Database update exception", exception);
         }
+    }
+
+    public async Task<CloudFileInfo> SaveSystemFileAsync(Stream stream, string name, string contentType, CloudUser user)
+    {
+        string id = await SaveFileToFileSystemAsync(stream);
+        var fileInfo = new CloudFileInfo()
+        {
+            Id = id,
+            Name = name,
+            User = user,
+            Size = stream.Length,
+            ContentType = contentType,
+            IsSystemFile = true,
+        };
+
+        await SaveFileInfo(fileInfo);
+        return fileInfo;
     }
 
     public Stream GetFileStream(CloudFileInfo fileInfo)
