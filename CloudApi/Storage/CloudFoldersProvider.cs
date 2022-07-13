@@ -152,6 +152,7 @@ public class CloudFoldersProvider : ICloudFoldersProvider
             foldersTaken = Math.Min(pageSize, foldersCount - offset);
             folders = await _databaseContext.Folders
                 .Where(foldersPredicate)
+                .OrderBy((folder) => folder.Name)
                 .Skip(offset)
                 .Take(foldersTaken)
                 .ToArrayAsync();
@@ -163,6 +164,7 @@ public class CloudFoldersProvider : ICloudFoldersProvider
             int filesInfoTaken = Math.Min(pageSize - foldersTaken, filesInfoCount - filesInfoOffset);
             filesInfo = await _databaseContext.FilesInfo
                 .Where(filesPredicate)
+                .OrderBy((fileInfo) => fileInfo.Name)
                 .Skip(filesInfoOffset)
                 .Take(filesInfoTaken)
                 .ToArrayAsync();
