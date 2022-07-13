@@ -11,12 +11,12 @@ export function password() {
 
 export function folderName() {
   return Yup.string()
-    .matches(/^[^\\/:?"<>|]*/, 'The folder name must not contain the following characters: \\ / : ? " < > |')
+    .matches(/^[^\\/:?"<>|]*$/, 'The folder name must not contain the following characters: \\ / : ? " < > |')
     .max(255, 'Max number of characters is 255');
 }
 
 export function fileName() {
   return Yup.string()
-    .matches(/^[^\\/:?"<>|]*/, 'The file name must not contain the following characters: \\ / : ? " < > |')
+    .matches(/^[^\\/:?"<>|]*$/, 'The file name must not contain the following characters: \\ / : ? " < > |')
     .max(255, 'Max number of characters is 255');
 }
