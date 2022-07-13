@@ -1,0 +1,73 @@
+version: "3.8"
+
+services:
+  postgres:
+    image: postgres:alpine3.16
+    environment:
+      POSTGRES_USER: cloud
+      POSTGRES_PASSWORD: testpass123
+      POSTGRES_DB: cloud
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./CloudApi/postgres/init.sql:/docker-entrypoint-initdb.d/init.sql
+
+  backend:
+    build:
+      context: ./CloudApi
+    environment:
+      DATABASE_CONNECTION_STRING: User ID=cloud;Password=testpass123;Host=postgres;Port=5432;Database=cloud;
+    volumes:
+      - files:/app/Files
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.backend.entrypoints=web
+      - traefik.http.routers.backend.rule=PathPrefix(`/api`)
+
+  frontend:
+    build:
+      context: ./frontend
+    labels:
+      - traefik.enable=true
+      - traefik.http.routers.frontend.entrypoints=web
+      - traefik.http.routers.frontend.rule=PathPrefix(`/`)
+
+  socket-proxy:
+    image: tecnativa/docker-socket-proxy:0.1.1
+    restart: always
+    userns_mode: host
+    environment:
+      CONTAINERS: 1
+    volumes:
+      - /var/run/docker.sock:/var/run/docker.sock:ro
+
+  reverse-proxy:
+    image: traefik:v2.5
+    restart: always
+    ports:
+      - 80:80
+    command:
+      - --global.sendAnonymousUsage=false
+      - --providers.docker
+      - --providers.docker.exposedByDefault=false
+      - --providers.docker.endpoint=tcp://socket-proxy:2375
+      # HTTP
+      - --entrypoints.web.address=:80
+      - --entrypoints.web.http.middlewares=security-headers,rate-limit
+    labels:
+      - traefik.enable=true
+      # Middleware: security-headers
+      - traefik.http.middlewares.security-headers.headers.frameDeny=true
+      - traefik.http.middlewares.security-headers.headers.contentTypeNosniff=true
+      - traefik.http.middlewares.security-headers.headers.browserXssFilter=true
+      - traefik.http.middlewares.security-headers.headers.contentSecurityPolicy=frame-ancestors 'none'; object-src 'none'; default-src 'self'; img-src 'self' blob:; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com/; font-src 'self' https://fonts.gstatic.com/
+      - traefik.http.middlewares.security-headers.headers.referrerPolicy=no-referrer
+      # Middleware: rate-limit
+      - traefik.http.middlewares.rate-limit.ratelimit.average=250
+      - traefik.http.middlewares.rate-limit.ratelimit.period=1m
+      - traefik.http.middlewares.rate-limit.ratelimit.burst=50
+    depends_on:
+      - socket-proxy
+
+volumes:
+  files:
+  postgres_data:

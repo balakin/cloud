@@ -28,6 +28,7 @@ namespace CloudApi.Migrations
                 columns: table => new
                 {
                     Id = table.Column<string>(type: "TEXT", nullable: false),
+                    AvatarId = table.Column<string>(type: "TEXT", nullable: true),
                     UserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     NormalizedUserName = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
                     Email = table.Column<string>(type: "TEXT", maxLength: 256, nullable: true),
@@ -99,7 +100,7 @@ namespace CloudApi.Migrations
                 columns: table => new
                 {
                     Key = table.Column<string>(type: "TEXT", nullable: false),
-                    AuthenticationTicketBytes = table.Column<byte[]>(type: "Binary", maxLength: 2048, nullable: false),
+                    AuthenticationTicketBytes = table.Column<byte[]>(type: "BLOB", maxLength: 2048, nullable: false),
                     UserId = table.Column<string>(type: "TEXT", nullable: false)
                 },
                 constraints: table =>
@@ -204,9 +205,11 @@ namespace CloudApi.Migrations
                 {
                     Id = table.Column<string>(type: "TEXT", nullable: false),
                     Name = table.Column<string>(type: "TEXT", maxLength: 255, nullable: false),
+                    ContentType = table.Column<string>(type: "TEXT", maxLength: 255, nullable: false),
                     Size = table.Column<long>(type: "INTEGER", nullable: false),
                     UserId = table.Column<string>(type: "TEXT", nullable: false),
-                    FolderId = table.Column<string>(type: "TEXT", nullable: true)
+                    FolderId = table.Column<string>(type: "TEXT", nullable: true),
+                    IsSystemFile = table.Column<bool>(type: "INTEGER", nullable: false)
                 },
                 constraints: table =>
                 {
@@ -230,9 +233,21 @@ namespace CloudApi.Migrations
                 column: "FolderId");
 
             migrationBuilder.CreateIndex(
+                name: "IX_FilesInfo_Name",
+                table: "FilesInfo",
+                column: "Name",
+                unique: true);
+
+            migrationBuilder.CreateIndex(
                 name: "IX_FilesInfo_UserId",
                 table: "FilesInfo",
                 column: "UserId");
+
+            migrationBuilder.CreateIndex(
+                name: "IX_Folders_Name",
+                table: "Folders",
+                column: "Name",
+                unique: true);
 
             migrationBuilder.CreateIndex(
                 name: "IX_Folders_ParentId",

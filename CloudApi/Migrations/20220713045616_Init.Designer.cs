@@ -11,7 +11,7 @@ using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 namespace CloudApi.Migrations
 {
     [DbContext(typeof(DatabaseContext))]
-    [Migration("20220613143942_Init")]
+    [Migration("20220713045616_Init")]
     partial class Init
     {
         protected override void BuildTargetModel(ModelBuilder modelBuilder)
@@ -24,8 +24,16 @@ namespace CloudApi.Migrations
                     b.Property<string>("Id")
                         .HasColumnType("TEXT");
 
+                    b.Property<string>("ContentType")
+                        .IsRequired()
+                        .HasMaxLength(255)
+                        .HasColumnType("TEXT");
+
                     b.Property<string>("FolderId")
                         .HasColumnType("TEXT");
+
+                    b.Property<bool>("IsSystemFile")
+                        .HasColumnType("INTEGER");
 
                     b.Property<string>("Name")
                         .IsRequired()
@@ -42,6 +50,9 @@ namespace CloudApi.Migrations
                     b.HasKey("Id");
 
                     b.HasIndex("FolderId");
+
+                    b.HasIndex("Name")
+                        .IsUnique();
 
                     b.HasIndex("UserId");
 
@@ -67,6 +78,9 @@ namespace CloudApi.Migrations
 
                     b.HasKey("Id");
 
+                    b.HasIndex("Name")
+                        .IsUnique();
+
                     b.HasIndex("ParentId");
 
                     b.HasIndex("UserId");
@@ -81,6 +95,9 @@ namespace CloudApi.Migrations
 
                     b.Property<int>("AccessFailedCount")
                         .HasColumnType("INTEGER");
+
+                    b.Property<string>("AvatarId")
+                        .HasColumnType("TEXT");
 
                     b.Property<string>("ConcurrencyStamp")
                         .IsConcurrencyToken()
@@ -146,7 +163,7 @@ namespace CloudApi.Migrations
                     b.Property<byte[]>("AuthenticationTicketBytes")
                         .IsRequired()
                         .HasMaxLength(2048)
-                        .HasColumnType("Binary");
+                        .HasColumnType("BLOB");
 
                     b.Property<string>("UserId")
                         .IsRequired()

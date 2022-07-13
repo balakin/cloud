@@ -161,7 +161,7 @@ namespace CloudApi.Migrations
                     b.Property<byte[]>("AuthenticationTicketBytes")
                         .IsRequired()
                         .HasMaxLength(2048)
-                        .HasColumnType("Binary");
+                        .HasColumnType("BLOB");
 
                     b.Property<string>("UserId")
                         .IsRequired()

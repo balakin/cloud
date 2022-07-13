@@ -8,7 +8,7 @@ public class Session
     [Key]
     public string Key { get; set; } = string.Empty;
 
-    [MaxLength(2048), Column(TypeName = "Binary")]
+    [MaxLength(2048)]
     public byte[] AuthenticationTicketBytes { get; set; } = null!;
 
     [ForeignKey(nameof(User))]
