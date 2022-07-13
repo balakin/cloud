@@ -35,6 +35,10 @@ export function getFolderPath(id: string, signal?: AbortSignal): AxiosPromise<Fo
   return api.get(`${BASE_URL}/${id}/path`, { signal });
 }
 
+export function downloadFolder(id: string): void {
+  window.location.href = `${BASE_URL}/${id}/download`;
+}
+
 export function changeFolder(id: string, data: ChangeFolderDto): AxiosPromise<ChangeFolderDto> {
   return api.patch(`${BASE_URL}/${id}`, data);
 }

@@ -1,3 +1,4 @@
+using CloudApi.Controllers;
 using CloudApi.Models;
 using CloudApi.Storage;
 using CloudApi.V1.Dto;
@@ -16,10 +17,16 @@ public class FoldersController : ControllerBase
 
     private readonly ICloudFoldersProvider _cloudFoldersProvider;
 
-    public FoldersController(UserManager<CloudUser> userManager, ICloudFoldersProvider cloudFoldersProvider)
+    private readonly IFolderZipGenerator _folderZipGenerator;
+
+    public FoldersController(
+        UserManager<CloudUser> userManager,
+        ICloudFoldersProvider cloudFoldersProvider,
+        IFolderZipGenerator folderZipGenerator)
     {
         _userManager = userManager;
         _cloudFoldersProvider = cloudFoldersProvider;
+        _folderZipGenerator = folderZipGenerator;
     }
 
     /// <summary>
@@ -188,6 +195,43 @@ public class FoldersController : ControllerBase
 
         IEnumerable<CloudFolder> parts = await _cloudFoldersProvider.GetFolderPathPartsAsync(folder);
         return FolderPathDto.FromParts(parts);
+    }
+
+    /// <summary>
+    /// Downloads a single folder
+    /// </summary>
+    /// <param name="id">The folder identifier</param>
+    /// <returns>The folder</returns>
+    /// <response code="200">The folder was successfully retrieved</response>
+    /// <response code="400">The folder identifier is invalid</response>
+    /// <response code="401">The user unauthorized</response>
+    /// <response code="404">The folder does not exist</response>
+    [HttpGet("{id}/download")]
+    [Consumes("application/json")]
+    [Produces("application/json")]
+    [ProducesResponseType(StatusCodes.Status200OK)]
+    [ProducesResponseType(StatusCodes.Status400BadRequest)]
+    [ProducesResponseType(StatusCodes.Status401Unauthorized)]
+    [ProducesResponseType(StatusCodes.Status404NotFound)]
+    public async Task<IActionResult> DownloadFolder(string id)
+    {
+        CloudFolder? folder = await _cloudFoldersProvider.GetFolderAsync(id);
+        if (folder == null)
+        {
+            return NotFound();
+        }
+
+        string userId = _userManager.GetUserId(User);
+        if (userId != folder.UserId)
+        {
+            return NotFound();
+        }
+
+        string fileName = await _folderZipGenerator.GenerateAsync(folder);
+        return new TempPhysicalFileResult(fileName, "application/zip")
+        {
+            FileDownloadName = $"{folder.Name}.zip"
+        };
     }
 
     /// <summary>

@@ -1,6 +1,7 @@
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { IconButton, IconButtonProps, Menu } from '@mui/material';
 import { DeleteFolderMenuItem } from 'features/delete-folder';
+import { DownloadFolderMenuItem } from 'features/download-folder';
 import { RenameFolderMenuItem } from 'features/rename-folder';
 import { FC, MouseEventHandler, useState } from 'react';
 
@@ -36,8 +37,9 @@ export const FolderActions: FC<FolderActionsProps> = ({ id, name, ...props }) =>
         PaperProps={{ sx: { maxWidth: '150px', width: '100%' } }}
         MenuListProps={{ dense: true }}
       >
-        <DeleteFolderMenuItem id={id} name={name} onDelete={handleClose} />
+        <DownloadFolderMenuItem id={id} onDownload={handleClose} />
         <RenameFolderMenuItem id={id} name={name} onClose={handleClose} />
+        <DeleteFolderMenuItem id={id} name={name} onDelete={handleClose} />
       </Menu>
     </>
   );

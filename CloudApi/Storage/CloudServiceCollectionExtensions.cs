@@ -9,6 +9,7 @@ public static partial class CloudServiceCollectionExtensions
         services.AddTransient<ICloudFilesProvider, CloudFilesProvider>();
         services.AddTransient<IFileNameResolver, FileNameResolver>();
         services.AddScoped<ICloudFoldersProvider, CloudFoldersProvider>();
+        services.AddTransient<IFolderZipGenerator, FolderZipGenerator>();
         return services;
     }
 }
