@@ -54,10 +54,10 @@ namespace CloudApi.Migrations.PostgresDatabase
 
                     b.HasIndex("FolderId");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
-
                     b.HasIndex("UserId");
+
+                    b.HasIndex("Name", "FolderId")
+                        .IsUnique();
 
                     b.ToTable("FilesInfo");
                 });
@@ -81,12 +81,12 @@ namespace CloudApi.Migrations.PostgresDatabase
 
                     b.HasKey("Id");
 
-                    b.HasIndex("Name")
-                        .IsUnique();
-
                     b.HasIndex("ParentId");
 
                     b.HasIndex("UserId");
+
+                    b.HasIndex("Name", "ParentId")
+                        .IsUnique();
 
                     b.ToTable("Folders");
                 });

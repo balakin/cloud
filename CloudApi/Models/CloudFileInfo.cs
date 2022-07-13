@@ -4,7 +4,7 @@ using Microsoft.EntityFrameworkCore;
 
 namespace CloudApi.Models;
 
-[Index(nameof(CloudFileInfo.Name), IsUnique = true)]
+[Index(nameof(CloudFileInfo.Name), nameof(CloudFileInfo.FolderId), IsUnique = true)]
 public class CloudFileInfo
 {
     [Key]

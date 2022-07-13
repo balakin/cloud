@@ -111,11 +111,11 @@ CREATE TABLE "FilesInfo" (
 
 CREATE INDEX "IX_FilesInfo_FolderId" ON "FilesInfo" ("FolderId");
 
-CREATE UNIQUE INDEX "IX_FilesInfo_Name" ON "FilesInfo" ("Name");
+CREATE UNIQUE INDEX "IX_FilesInfo_Name_FolderId" ON "FilesInfo" ("Name", "FolderId");
 
 CREATE INDEX "IX_FilesInfo_UserId" ON "FilesInfo" ("UserId");
 
-CREATE UNIQUE INDEX "IX_Folders_Name" ON "Folders" ("Name");
+CREATE UNIQUE INDEX "IX_Folders_Name_ParentId" ON "Folders" ("Name", "ParentId");
 
 CREATE INDEX "IX_Folders_ParentId" ON "Folders" ("ParentId");
 
@@ -138,7 +138,7 @@ CREATE INDEX "EmailIndex" ON "Users" ("NormalizedEmail");
 CREATE UNIQUE INDEX "UserNameIndex" ON "Users" ("NormalizedUserName");
 
 INSERT INTO "__EFMigrationsHistory" ("MigrationId", "ProductVersion")
-VALUES ('20220713045628_Init', '6.0.5');
+VALUES ('20220713055851_Init', '6.0.5');
 
 COMMIT;
 

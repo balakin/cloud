@@ -233,9 +233,9 @@ namespace CloudApi.Migrations
                 column: "FolderId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_FilesInfo_Name",
+                name: "IX_FilesInfo_Name_FolderId",
                 table: "FilesInfo",
-                column: "Name",
+                columns: new[] { "Name", "FolderId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
@@ -244,9 +244,9 @@ namespace CloudApi.Migrations
                 column: "UserId");
 
             migrationBuilder.CreateIndex(
-                name: "IX_Folders_Name",
+                name: "IX_Folders_Name_ParentId",
                 table: "Folders",
-                column: "Name",
+                columns: new[] { "Name", "ParentId" },
                 unique: true);
 
             migrationBuilder.CreateIndex(
