@@ -8,7 +8,7 @@ builder.Services.AddCloudAntiforgery();
 
 builder.Services.AddCloudDataConverters();
 
-builder.Services.AddCloudDevelopmentDatabase();
+builder.Services.AddCloudDevelopmentDatabase(builder.Environment.IsProduction());
 
 builder.Services.AddCloudStorage();
 
