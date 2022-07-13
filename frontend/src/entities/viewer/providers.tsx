@@ -4,16 +4,18 @@ import { cloudHelpers } from 'shared/helpers';
 import { useSnackbarErrorHandler } from 'shared/hooks';
 import { useViewerQuery } from './api';
 import { ViewerContext, ViewerContextValue } from './contexts';
+import { useIsAuth } from './hooks';
 import { setUnauthorized } from './model';
 
 export type ViewerProviderProps = PropsWithChildren<{}>;
 
 export const ViewerProvider: FC<ViewerProviderProps> = ({ children }) => {
-  const { data, error, isLoading, isError, isIdle, refetch } = useViewerQuery();
+  const isAuth = useIsAuth();
+  const { data, error, isLoading, isError, refetch } = useViewerQuery();
   const handleError = useSnackbarErrorHandler();
 
   const value: ViewerContextValue = {
-    viewer: isIdle || !data ? null : data,
+    viewer: !isAuth || !data ? null : data,
     error,
     isLoading,
     isError,
