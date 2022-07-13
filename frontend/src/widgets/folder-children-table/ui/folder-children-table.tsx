@@ -240,7 +240,7 @@ const StubRow: FC = () => {
       <IconTableCell sx={{ lineHeight: '150%' }}>
         <Skeleton width={20} />
       </IconTableCell>
-      <NameTableCell>
+      <NameTableCell sx={{ lineHeight: '150%' }}>
         <Skeleton width={150} />
       </NameTableCell>
       <ActionsTableCell />
