@@ -75,8 +75,8 @@ public class FilesController : ControllerBase
 
         string fileName = segments[segments.Length - 1];
         string? resolvedFileName = folder == null
-            ? await _fileNameResolver.Resolve(fileName, user)
-            : await _fileNameResolver.Resolve(fileName, folder);
+            ? await _fileNameResolver.ResolveAsync(fileName, user)
+            : await _fileNameResolver.ResolveAsync(fileName, folder);
 
         if (resolvedFileName == null)
         {

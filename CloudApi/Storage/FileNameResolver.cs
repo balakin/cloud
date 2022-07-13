@@ -18,7 +18,7 @@ public class FileNameResolver : IFileNameResolver
         _cloudFilesProvider = cloudFilesProvider;
     }
 
-    public async Task<string?> Resolve(string fileName, CloudUser user)
+    public async Task<string?> ResolveAsync(string fileName, CloudUser user)
     {
         if (fileName.Length > MaxLength)
         {
@@ -40,16 +40,16 @@ public class FileNameResolver : IFileNameResolver
                 index = 0;
             }
 
-            return await Resolve(
+            return await ResolveAsync(
                 $"{indexedMatch.Groups[1].Value} ({index + 1}){indexedMatch.Groups[3].Value}",
                 user);
         }
 
         Match match = _fileNameRegex.Match(fileName);
-        return await Resolve($"{match.Groups[1].Value} (1){match.Groups[2].Value}", user);
+        return await ResolveAsync($"{match.Groups[1].Value} (1){match.Groups[2].Value}", user);
     }
 
-    public async Task<string?> Resolve(string fileName, CloudFolder folder)
+    public async Task<string?> ResolveAsync(string fileName, CloudFolder folder)
     {
         if (fileName.Length > MaxLength)
         {
@@ -71,12 +71,12 @@ public class FileNameResolver : IFileNameResolver
                 index = 0;
             }
 
-            return await Resolve(
+            return await ResolveAsync(
                 $"{indexedMatch.Groups[1].Value} ({index + 1}){indexedMatch.Groups[3].Value}",
                 folder);
         }
 
         Match match = _fileNameRegex.Match(fileName);
-        return await Resolve($"{match.Groups[1].Value} (1){match.Groups[2].Value}", folder);
+        return await ResolveAsync($"{match.Groups[1].Value} (1){match.Groups[2].Value}", folder);
     }
 }

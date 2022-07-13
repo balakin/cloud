@@ -3,6 +3,7 @@ import { FC, MouseEventHandler, useState } from 'react';
 import MoreHorizIcon from '@mui/icons-material/MoreHoriz';
 import { DeleteFileMenuItem } from 'features/delete-file';
 import { RenameFileMenuItem } from 'features/rename-file';
+import { DownloadFileMenuItem } from 'features/download-file';
 
 export type FileActionsProps = {
   id: string;
@@ -36,8 +37,9 @@ export const FileActions: FC<FileActionsProps> = ({ id, name, ...props }) => {
         PaperProps={{ sx: { maxWidth: '150px', width: '100%' } }}
         MenuListProps={{ dense: true }}
       >
-        <DeleteFileMenuItem id={id} name={name} onDelete={handleClose} />
+        <DownloadFileMenuItem id={id} onDownload={handleClose} />
         <RenameFileMenuItem id={id} name={name} onClose={handleClose} />
+        <DeleteFileMenuItem id={id} name={name} onDelete={handleClose} />
       </Menu>
     </>
   );
