@@ -52,7 +52,7 @@ Required tools:
 Download project:
 
 ```bash
-git clone https://github.com/Trequend/cloud.git
+git clone https://github.com/balakin/cloud.git
 cd cloud
 ```
 
@@ -77,7 +77,7 @@ Required tools:
 Download project:
 
 ```bash
-git clone https://github.com/Trequend/cloud.git
+git clone https://github.com/balakin/cloud.git
 cd cloud
 ```
 
